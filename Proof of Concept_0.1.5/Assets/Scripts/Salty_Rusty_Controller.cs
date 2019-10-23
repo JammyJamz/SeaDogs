@@ -606,7 +606,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         else if(inRustyHands)
         {
             // lerp salty's position to center of rusty's hands
-            salty.transform.position = Vector3.Lerp(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward*0.25f) + new Vector3(0,0f,0), 0.05f);
+            salty.transform.position = Vector3.Lerp(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward*0.25f), 0.05f);
 
             // reset anim bool
             saltyAnim.SetBool("isReadyForThrow", false);

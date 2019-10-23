@@ -10,6 +10,7 @@ public class FlyingEnemyTest : MonoBehaviour
     public float length;
     public float lookRadius = 10f;
     public float delayAttack = 2f;
+    public float delayToStart = 5f;
     public float hangTime = 10f;
 
     public float angularSpeed;
@@ -25,6 +26,8 @@ public class FlyingEnemyTest : MonoBehaviour
     private bool playerClose = false;
     private bool forceApplied = false;
 
+    private bool hitPlayer = false;
+
     private Vector3 startPos;
     Vector3 direction;
     Rigidbody rb;
@@ -38,42 +41,61 @@ public class FlyingEnemyTest : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         distance = Vector3.Distance(target.position, transform.position);
         Vector3 targetDir = guide.position - transform.position;
 
-
-        if (attack == false)
+        if(!hitPlayer)
         {
-            counter += Time.deltaTime;
-            x = Mathf.Cos(counter) * width;
-            y = Mathf.Sin(counter) * height;
-            z = Mathf.Sin(counter) * length;
-
-            // Newly added for rotation along its path.
-            // Vector3 futurePos = new Vector3(x,y,z);
-            // transform.LookAt(futurePos);
-
-            float step = angularSpeed * Time.deltaTime;
-
-            transform.position = startPos + new Vector3(x, y, z);
-
-            Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0f);
-            transform.rotation = Quaternion.LookRotation(newDir);
-
-        }
-
-        if (distance <= lookRadius)
-        {
-            attack = true;
-            if (!forceApplied)
+            if (attack == false)
             {
-                playerClose = true;
+                counter += Time.deltaTime;
+                x = Mathf.Cos(counter) * width;
+                y = Mathf.Sin(counter) * height;
+                z = Mathf.Sin(counter) * length;
+
+                // Newly added for rotation along its path.
+                // Vector3 futurePos = new Vector3(x,y,z);
+                // transform.LookAt(futurePos);
+
+                float step = angularSpeed * Time.deltaTime;
+
+                transform.position = startPos + new Vector3(x, y, z);
+
+                Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0f);
+                transform.rotation = Quaternion.LookRotation(newDir);
+
             }
-            // Debug.Log(attack);
-            StartCoroutine("lookAt");
+
+            if (distance <= lookRadius)
+            {
+                attack = true;
+                if (!forceApplied)
+                {
+                    playerClose = true;
+                }
+                // Debug.Log(attack);
+                StartCoroutine("lookAt");
+            }
         }
+        else
+        {
+            StartCoroutine("GoToStartPosition");
+            
+        }
+    }
+
+    IEnumerator GoToStartPosition()
+    {
+        yield return new WaitForSeconds(delayToStart);
+        transform.position = Vector3.Lerp(transform.position, startPos, 0.09f);
+        if(Vector3.Distance(startPos, transform.position) <= 0.1f)
+        {
+            transform.position = startPos;
+            hitPlayer = false;
+        }
+
     }
 
     IEnumerator lookAt()
@@ -84,7 +106,7 @@ public class FlyingEnemyTest : MonoBehaviour
             Vector3 direction = (target.position - transform.position).normalized;
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, direction.y, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
-            yield return new WaitForSecondsRealtime(delayAttack);
+            yield return new WaitForSeconds(delayAttack);
         }
 
         // transform.position = Vector3.MoveTowards(transform.position, target.transform.position, speed * Time.deltaTime);
@@ -100,7 +122,8 @@ public class FlyingEnemyTest : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
+        hitPlayer = true;
     }
 
     private void OnDrawGizmosSelected()

@@ -21,7 +21,7 @@ public class FlyingAIGuide : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         counter += Time.deltaTime;
         x = Mathf.Cos(counter) * width;

@@ -33,9 +33,9 @@ public class CoinScript : MonoBehaviour
         timer += Time.fixedDeltaTime;
         if(started && timer >= 0.05f)
         {
-            float randX = Random.value;
-            float randZ = Random.value;
-            rb.AddForce((Vector3.up - (new Vector3(randX, 0, randZ)).normalized).normalized * 2f, ForceMode.Impulse);
+            float randX = Random.Range(0, 5f);
+            float randZ = Random.Range(0, 5f);
+            rb.AddForce((Vector3.up + (new Vector3(randX, 0, randZ)).normalized).normalized * 2f, ForceMode.Impulse);
             started = false;
         }
     }

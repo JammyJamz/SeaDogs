@@ -49,6 +49,7 @@ public class MovingPlatformScript : MonoBehaviour
         if(!reachedPos1 && !reachedPos2)
         {
             transform.position = transform.position + (pos1.position - pos2.position).normalized * moveInc;
+
             if(rustyInTrigger)
             {
                 rusty.position = rusty.position + (pos1.position - pos2.position).normalized * moveInc;
@@ -64,6 +65,7 @@ public class MovingPlatformScript : MonoBehaviour
         else if(!reachedPos1)
         {
             transform.position = transform.position + (pos1.position - pos2.position).normalized * moveInc;
+
             if(saltyInTrigger)
             {
                 salty.position = salty.position + (pos1.position - pos2.position).normalized * moveInc;
@@ -81,6 +83,7 @@ public class MovingPlatformScript : MonoBehaviour
         else if (!reachedPos2)
         {
             transform.position = transform.position + (pos2.position - pos1.position).normalized * moveInc;
+
             if (saltyInTrigger)
             {
                 salty.position = salty.position + (pos2.position - pos1.position).normalized * moveInc;
