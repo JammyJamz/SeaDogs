@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     public void Play()
     {
         Cursor.visible = false;
-        SceneManager.LoadScene("Demo");
+        SceneManager.LoadScene("White Box 1");
         GameIsPaused = false;
         Time.timeScale = 1f;
     }

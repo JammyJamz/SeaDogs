@@ -30,6 +30,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public Transform saltyModelPlaceHolder;
     public Transform pivotPos;
 
+    public GameObject saltyRing;
+    public GameObject rustyRing;
+
     public Transform endThrowPoint;
 
     public Transform rustyRightHand;
@@ -45,6 +48,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private bool isSalty, climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands;
     private bool throwActivated;
     private bool isBeingThrown;
+    private bool startSwitchVFX;
+
+    private float vfxTimer;
 
     private void Start()
     {
@@ -95,6 +101,11 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         nonClimbingRot = new Vector3 (cameraPivot.localRotation.eulerAngles.x, cameraPivot.localRotation.eulerAngles.y, cameraPivot.localRotation.eulerAngles.z);
         exitRotationTarget = Quaternion.Euler(nonClimbingRot.x, nonClimbingRot.y, nonClimbingRot.z);
+
+        rustyRing.SetActive(false);
+        saltyRing.SetActive(false);
+
+        vfxTimer = 0f;
     }
 
 
@@ -165,6 +176,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             // reset switchKeyDown
             switchKeyDown = false;
+            startSwitchVFX = true;
+            vfxTimer = 0f;
+            saltyRing.SetActive(false);
+            rustyRing.SetActive(false);
         }
         else if(climbKeyDown && isSalty) // climb key pressed
         {
@@ -298,6 +313,29 @@ public class Salty_Rusty_Controller : MonoBehaviour
         // reset mouse vars
         mouseY = 0;
         mouseX = 0;
+
+        if(startSwitchVFX)
+        {
+            
+            if(isSalty)
+            {
+                saltyRing.SetActive(true);
+            }
+            else
+            {
+                rustyRing.SetActive(true);
+            }
+
+            vfxTimer += Time.fixedDeltaTime;
+
+            if(vfxTimer >= 1.5f)
+            {
+                vfxTimer = 0f;
+                startSwitchVFX = false;
+                rustyRing.SetActive(false);
+                saltyRing.SetActive(false);
+            }
+        }
 
         if (isSwitching)
         {
