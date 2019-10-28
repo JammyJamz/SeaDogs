@@ -54,6 +54,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 300;
         // initialization of variables
         currentCharacter = (new GameObject()).transform;
         rustyRig = rusty.GetComponent<Rigidbody>();
@@ -111,7 +112,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Update()
     {
-        pivotPos.position = camPivotPlaceHolder.position;
+        
         // reset vars
         climbKeyDown = false;
 
@@ -265,13 +266,13 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (isSalty)
             {
                 // update destination of rusty AI
-                rustyAgent.SetDestination(salty.transform.position);
+                //rustyAgent.SetDestination(salty.transform.position);
 
             }
             else
             {
                 // update destination of salty AI
-                saltyAgent.SetDestination(rusty.transform.position);
+                // saltyAgent.SetDestination(rusty.transform.position);
             }
         }
 
@@ -313,6 +314,19 @@ public class Salty_Rusty_Controller : MonoBehaviour
         // reset mouse vars
         mouseY = 0;
         mouseX = 0;
+
+        if(isSalty)
+        {
+            Vector3 tPos = saltyAgent.transform.position + (rustyAgent.transform.position - salty.transform.position).normalized*2;
+            Debug.DrawRay(tPos, Vector3.up, Color.red);
+            Debug.Log(tPos);
+            Debug.Log("Destination: " + rustyAgent.destination);
+            rustyAgent.velocity = (tPos - rustyAgent.transform.position).normalized * 7f;
+        }
+        else
+        {
+            saltyAgent.velocity = (rustyAgent.transform.position - saltyAgent.transform.position).normalized * 5f;
+        }
 
         if(startSwitchVFX)
         {
@@ -682,5 +696,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyAnim.SetBool("isFalling", true);
             isSwitching = true;
         }
+        pivotPos.position = camPivotPlaceHolder.position;
     }
 }

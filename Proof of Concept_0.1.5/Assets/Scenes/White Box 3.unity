@@ -1531,7 +1531,7 @@ PrefabInstance:
     - target: {fileID: 3804878224292067098, guid: 486bace523b8b05459ec5fc95285c3e8,
         type: 3}
       propertyPath: mouseSens
-      value: 50
+      value: 200
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
