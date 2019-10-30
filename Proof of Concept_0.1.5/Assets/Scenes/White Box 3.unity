@@ -1533,6 +1533,14 @@ PrefabInstance:
       propertyPath: mouseSens
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 947663856, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
+      propertyPath: pivotPos
+      value: 
+      objectReference: {fileID: 811950074}
+    - target: {fileID: 947663856, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
+      propertyPath: cameraPivot
+      value: 
+      objectReference: {fileID: 811950074}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
 --- !u!1 &1538396899

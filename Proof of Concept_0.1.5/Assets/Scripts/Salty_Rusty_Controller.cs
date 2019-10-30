@@ -260,73 +260,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
             throwActivated = true;
             inRustyHands = false;
         }
-        if(!inRustyHands && !throwActivated)
-        {
-            // update destinations of NavMesh Agents
-            if (isSalty)
-            {
-                // update destination of rusty AI
-                //rustyAgent.SetDestination(salty.transform.position);
-
-            }
-            else
-            {
-                // update destination of salty AI
-                // saltyAgent.SetDestination(rusty.transform.position);
-            }
-        }
+        
 
         // reset keys
         throwKeyDown = false;
         climbKeyDown = false;
-    }
-
-    private void FixedUpdate()
-    {
+    
         Vector3 movVertical;
         Vector3 movHorizontal;
 
         // reset velocity
         velocity = Vector3.zero;
-
-        // rotate camera left / right
-        cameraPivot.Rotate(new Vector3(0, mouseX, 0), Space.World);
-        
-        // invert Y value
-        mouseY *= -1;
-
-        // code to lock up / down camera movement;
-        float angle = cameraPivot.rotation.eulerAngles.x;
-        angle = (angle > 180) ? angle - 360 : angle;
-
-        if (mouseY < 0 && (angle + mouseY < -32))
-        {
-            mouseY = 0;
-        }
-        else if (mouseY > 0 && angle + mouseY > 45)
-        {
-            mouseY = 0;
-        }
-
-        // rotate camera up / down
-        cameraPivot.Rotate(new Vector3(mouseY, 0, 0));
-
-        // reset mouse vars
-        mouseY = 0;
-        mouseX = 0;
-
-        if(isSalty)
-        {
-            Vector3 tPos = saltyAgent.transform.position + (rustyAgent.transform.position - salty.transform.position).normalized*2;
-            Debug.DrawRay(tPos, Vector3.up, Color.red);
-            Debug.Log(tPos);
-            Debug.Log("Destination: " + rustyAgent.destination);
-            rustyAgent.velocity = (tPos - rustyAgent.transform.position).normalized * 7f;
-        }
-        else
-        {
-            saltyAgent.velocity = (rustyAgent.transform.position - saltyAgent.transform.position).normalized * 5f;
-        }
 
         if(startSwitchVFX)
         {
@@ -340,7 +284,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 rustyRing.SetActive(true);
             }
 
-            vfxTimer += Time.fixedDeltaTime;
+            vfxTimer += Time.deltaTime;
 
             if(vfxTimer >= 1.5f)
             {
@@ -467,15 +411,39 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 sCollider.rotation = Quaternion.Lerp(sCollider.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 0.02f);
             }
 
+            if (!inRustyHands && !throwActivated)
+            {
+                // update destinations of NavMesh Agents
+                if (isSalty)
+                {
+                    // update destination of rusty AI
+                    if (velocity != Vector3.zero)
+                    {
+                        rustyAgent.destination = (salty.transform.position);
+                    }
+                    else
+                    {
+
+                        rustyAgent.destination = (salty.transform.position);
+                        //rustyAgent.velocity = velocity;
+                    }
+
+                }
+                else
+                {
+                    // update destination of salty AI
+                    saltyAgent.SetDestination(rusty.transform.position);
+                }
+            }
 
             // movement code
-            if (isSalty && !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore))
+            if (isSalty /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
             {
                 // is salty and can move (nothing in front of salty)
 
                 // calculate new position and move to it
-                Vector3 newPos = saltyRig.position + velocity * Time.fixedDeltaTime;
-                saltyRig.MovePosition(newPos);
+                Vector3 newPos = salty.transform.position + velocity * Time.deltaTime;
+                salty.transform.position = (newPos);
             }
             else if (!isSalty)
             {
@@ -516,7 +484,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     rustyAnim.SetBool("isClimbing", false);
 
                     // move block
-                    blockHit.transform.position = blockHit.transform.position + velocity * Time.fixedDeltaTime;
+                    blockHit.transform.position = blockHit.transform.position + velocity * Time.deltaTime;
 
                     // move rusty back so he doesn't clip through box
                     rusty.transform.position = Vector3.Lerp(rusty.transform.position, new Vector3(blockHit.transform.position.x, rusty.transform.position.y, blockHit.transform.position.z) + blockHit.normal * 1.8f, 0.05f);
@@ -532,7 +500,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // calculate new position and move to it
-                Vector3 newPos = rusty.transform.position + velocity * Time.fixedDeltaTime;
+                Vector3 newPos = rusty.transform.position + velocity * Time.deltaTime;
                 rusty.transform.position = (newPos);
             }
 
@@ -576,7 +544,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             velocity = (movVertical + movHorizontal).normalized * climbingSpeed;
             
             // get relative new position (changes to raycast hit + offset below)
-            Vector3 newPos = (saltyRig.position + Vector3.up*0.25f) + velocity * Time.fixedDeltaTime;
+            Vector3 newPos = (saltyRig.position + Vector3.up*0.25f) + velocity * Time.deltaTime;
 
             //Debug.DrawRay(newPos, saltyModelPlaceHolder.forward, Color.red, 20f, false);
 
@@ -696,6 +664,73 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyAnim.SetBool("isFalling", true);
             isSwitching = true;
         }
-        pivotPos.position = camPivotPlaceHolder.position;
+        
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 movHorizontal;
+        Vector3 movVertical;
+
+        if (!isClimbing && !inRustyHands && !throwActivated)
+        {
+            // update current character position and rotation
+            currentCharacter.position = camPivotPlaceHolder.position;
+            currentCharacter.rotation = cameraPivot.rotation;
+
+            if (isSalty)
+            {
+                // update isKinematic on rigid bodies
+                rustyRig.isKinematic = true;
+                saltyRig.isKinematic = false;
+            }
+            else
+            {
+                // update isKinematic on rigid bodies
+                rustyRig.isKinematic = false;
+                saltyRig.isKinematic = true;
+            }
+
+            // zero out X and Z rotation for movement vectors
+            currentCharacter.rotation = Quaternion.Euler(0, currentCharacter.eulerAngles.y, 0);
+
+            // set movement vectors
+            movVertical = currentCharacter.forward * movZ;
+            movHorizontal = currentCharacter.right * movX;
+
+            // set velocity vector direction
+            velocity = (movVertical + movHorizontal).normalized;
+
+            // check rigid body velocity to determine if falling or not
+            if (saltyRig.velocity.y < -1.5f)
+            {
+                // falling so multiply by falling speed
+                velocity *= fallingSpeed;
+
+                // update falling / throw bools
+                isFalling = true;
+                saltyAnim.SetBool("isFalling", true);
+                isBeingThrown = false;
+            }
+            else if (!isBeingThrown)
+            {
+                // not falling and not being thrown so multiply by running speed
+                velocity *= runningSpeed;
+                saltyAnim.SetBool("isFalling", false);
+            }
+
+
+
+            // movement code
+            if (isSalty /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
+            {
+                // is salty and can move (nothing in front of salty)
+
+                // calculate new position and move to it
+                //Vector3 newPos = salty.transform.position + velocity * Time.fixedDeltaTime;
+                //salty.transform.position = (newPos);
+            }
+        }
+
     }
 }
