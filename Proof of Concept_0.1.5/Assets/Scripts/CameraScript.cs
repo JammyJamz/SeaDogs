@@ -30,6 +30,7 @@ public class CameraScript : MonoBehaviour
 
     private void LateUpdate()
     {
+        
         // rotate camera left / right
         cameraPivot.Rotate(new Vector3(0, mouseX, 0), Space.World);
 
@@ -57,5 +58,6 @@ public class CameraScript : MonoBehaviour
         mouseX = 0;
 
         pivotPos.position = camPivotPlaceHolder.position;
+        
     }
 }

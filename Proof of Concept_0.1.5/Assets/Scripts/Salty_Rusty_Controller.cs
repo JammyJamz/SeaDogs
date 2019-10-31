@@ -37,7 +37,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     public Transform rustyRightHand;
     public Transform rustyLeftHand;
-    
+
     private Animator saltyAnim, rustyAnim;
     private Rigidbody saltyRig, rustyRig;
     private Transform saltyPos, rustyPos, currentCharacter;
@@ -45,12 +45,38 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private Vector3 fixRotation, posToMove, velocity, nonClimbingRot, currentWallDir, up;
     private RaycastHit startHit, lastHit;
     private Quaternion exitRotationTarget;
-    private bool isSalty, climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands;
+    private bool isSalty, climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands, jumpKeyDown;
     private bool throwActivated;
     private bool isBeingThrown;
     private bool startSwitchVFX;
 
+    private bool jumpActivated;
+
+    private float aiTimer;
+
     private float vfxTimer;
+
+    private float timeTakenDuringLerp = 0.25f;
+
+    //Whether we are currently interpolating or not
+    private bool _isLerping;
+
+    //The start and finish positions for the interpolation
+    private Vector3 _startPosition;
+    private Vector3 _endPosition;
+
+    //The Time.time value when we started the interpolation
+    private float _timeStartedLerping;
+
+    void StartLerping()
+    {
+        _isLerping = true;
+        _timeStartedLerping = Time.time;
+
+        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
+        _startPosition = camPivotPlaceHolder.localPosition;
+        _endPosition = rustyPivotPos.localPosition;
+    }
 
     private void Start()
     {
@@ -92,7 +118,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         ButtonScript.isSalty = true;
 
         // update parent of cam pivot placeholder
-        camPivotPlaceHolder.SetParent(saltyModelTrans);
+        camPivotPlaceHolder.SetParent(salty.transform);
         camPivotPlaceHolder.position = saltyPivotPos.position;
         // update Nav Agents
         rustyAgent.enabled = true;
@@ -100,19 +126,23 @@ public class Salty_Rusty_Controller : MonoBehaviour
         rCollider.gameObject.SetActive(false);
         sCollider.gameObject.SetActive(true);
 
-        nonClimbingRot = new Vector3 (cameraPivot.localRotation.eulerAngles.x, cameraPivot.localRotation.eulerAngles.y, cameraPivot.localRotation.eulerAngles.z);
+        nonClimbingRot = new Vector3(cameraPivot.localRotation.eulerAngles.x, cameraPivot.localRotation.eulerAngles.y, cameraPivot.localRotation.eulerAngles.z);
         exitRotationTarget = Quaternion.Euler(nonClimbingRot.x, nonClimbingRot.y, nonClimbingRot.z);
 
         rustyRing.SetActive(false);
         saltyRing.SetActive(false);
 
         vfxTimer = 0f;
+        aiTimer = 0f;
+
+        jumpKeyDown = false;
+        jumpActivated = false;
     }
 
 
     private void Update()
     {
-        
+
         // reset vars
         climbKeyDown = false;
 
@@ -124,6 +154,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         switchKeyDown = Input.GetKeyDown("e");
         climbKeyDown = Input.GetKeyDown("r");
         throwKeyDown = Input.GetKeyDown("v");
+        jumpKeyDown = Input.GetKeyDown("space");
 
         // get camera input
         mouseX += Input.GetAxis("Mouse X") * Time.deltaTime * mouseSens;
@@ -131,12 +162,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         mouseY += Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSens;
 
+        if(jumpKeyDown)
+        {
+            jumpActivated = true;
+        }
+
         // switch key pressed
         if (switchKeyDown && !isClimbing)
         {
             // salty is not climbing so allowed to switch
 
-            if(isSalty)
+            if (isSalty)
             {
                 // switch to rusty
 
@@ -144,15 +180,18 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 ButtonScript.isSalty = false;
 
                 // update parent of cam pivot placeholder to rusty's model
-                camPivotPlaceHolder.SetParent(rustyModelTans);
+                camPivotPlaceHolder.SetParent(rusty.transform);
 
                 // update Nav Agents
                 saltyAgent.enabled = true;
                 rustyAgent.enabled = false;
-
+                
                 // update colliders
                 sCollider.gameObject.SetActive(false);
                 rCollider.gameObject.SetActive(true);
+
+                //saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                //rustyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
             }
             else
             {
@@ -161,7 +200,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 ButtonScript.isSalty = true;
 
                 // update parent of cam pivot placeholder to salty's model
-                camPivotPlaceHolder.SetParent(saltyModelTrans);
+                camPivotPlaceHolder.SetParent(salty.transform);
 
                 // update Nav Agents
                 rustyAgent.enabled = true;
@@ -170,10 +209,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 // update colliders
                 rCollider.gameObject.SetActive(false);
                 sCollider.gameObject.SetActive(true);
+
+                //rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+                //saltyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
             }
-            
+
             // update isSwitching bool
             isSwitching = true;
+            StartLerping();
 
             // reset switchKeyDown
             switchKeyDown = false;
@@ -182,11 +225,11 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyRing.SetActive(false);
             rustyRing.SetActive(false);
         }
-        else if(climbKeyDown && isSalty) // climb key pressed
+        else if (climbKeyDown && isSalty) // climb key pressed
         {
             // isSalty so can start climb
 
-            if(!isClimbing) // not currently climbing
+            if (!isClimbing) // not currently climbing
             {
                 // raycast in front of salty to see if it hits climable wall
                 if (Physics.Raycast(saltyModelTrans.position + new Vector3(0, 0.5f, 0), saltyModelTrans.forward, out RaycastHit hit, 0.8f, LayerMask.GetMask("Climable Walls")))
@@ -210,7 +253,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                     // save current direction to the wall that was hit
                     currentWallDir = hit.normal * -1;
-                    
+
                     // turn gravity off for salty
                     saltyRig.useGravity = false;
 
@@ -231,7 +274,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 // turn gravity back on and reset velocity (for safe measures)
                 saltyRig.useGravity = true;
                 saltyRig.velocity = Vector3.zero;
-                
+
                 // turn collider back on and climb collider off
                 sCollider.gameObject.SetActive(true);
                 climbCollider.gameObject.SetActive(false);
@@ -240,7 +283,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 //exitRotationTarget = Quaternion.Euler(new Vector3(nonClimbingRot.x, cameraPivot.localRotation.eulerAngles.y, nonClimbingRot.z));
             }
         }
-        else if(throwKeyDown && !isSalty && !inRustyHands && inThrowTrigger)
+        else if (throwKeyDown && !isSalty && !inRustyHands && inThrowTrigger)
         {
             // throw key was pressed by rusty in the throw trigger
 
@@ -252,7 +295,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // don't want salty moving on navmesh when in rusty's hands
             saltyAgent.enabled = false;
         }
-        else if(throwKeyDown && !isSalty && inRustyHands)
+        else if (throwKeyDown && !isSalty && inRustyHands)
         {
             // salty in rusty's hands and throw key was pressed so initiate throw
 
@@ -260,22 +303,23 @@ public class Salty_Rusty_Controller : MonoBehaviour
             throwActivated = true;
             inRustyHands = false;
         }
-        
+
 
         // reset keys
         throwKeyDown = false;
         climbKeyDown = false;
-    
+        jumpKeyDown = false;
+
         Vector3 movVertical;
         Vector3 movHorizontal;
 
         // reset velocity
         velocity = Vector3.zero;
 
-        if(startSwitchVFX)
+        if (startSwitchVFX)
         {
-            
-            if(isSalty)
+
+            if (isSalty)
             {
                 saltyRing.SetActive(true);
             }
@@ -286,7 +330,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             vfxTimer += Time.deltaTime;
 
-            if(vfxTimer >= 1.5f)
+            if (vfxTimer >= 1.5f)
             {
                 vfxTimer = 0f;
                 startSwitchVFX = false;
@@ -298,33 +342,24 @@ public class Salty_Rusty_Controller : MonoBehaviour
         if (isSwitching)
         {
             // move camera from character to other character
-
-            if (isSalty)
+            if(_isLerping)
             {
-                // lerp local position of place holder to salty's pivot position
-                camPivotPlaceHolder.localPosition = Vector3.Lerp(camPivotPlaceHolder.localPosition, saltyPivotPos.localPosition, 0.025f);
+                float timeSinceStarted = Time.time - _timeStartedLerping;
+                float percentageComplete = timeSinceStarted / timeTakenDuringLerp;
 
-                // if it's close eneough, turn off switching
-                if (Vector3.Distance(cameraPivot.localPosition, saltyPivotPos.localPosition) < 0.0009f)
+               
+                camPivotPlaceHolder.localPosition = Vector3.Lerp(_startPosition, _endPosition, percentageComplete);
+
+                    
+                if (camPivotPlaceHolder.localPosition == _endPosition)
                 {
-                    cameraPivot.localPosition = saltyPivotPos.localPosition;
                     isSwitching = false;
+                    _isLerping = false;
                 }
             }
-            else
-            {
-                // lerp local position of place holder to rusty's pivot position
-                camPivotPlaceHolder.localPosition = Vector3.Lerp(camPivotPlaceHolder.localPosition, rustyPivotPos.localPosition, 0.025f);
-
-                // if it's close eneough, turn off switching
-                if (Vector3.Distance(cameraPivot.localPosition, rustyPivotPos.localPosition) < 0.0009f)
-                {
-                    cameraPivot.localPosition = rustyPivotPos.localPosition;
-                    isSwitching = false;
-                }
-            }
+            
         }
-        
+
         if (!isClimbing && !inRustyHands && !throwActivated)
         {
             // not climbing or throwing
@@ -336,6 +371,300 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // lerps salty rotation back to vertical since no longer climbing
             // salty.transform.rotation = Quaternion.Lerp(salty.transform.rotation, Quaternion.Euler(0, salty.transform.rotation.eulerAngles.y, 0), 0.02f);
 
+            // update current character position and rotation
+            currentCharacter.position = camPivotPlaceHolder.position;
+            currentCharacter.rotation = cameraPivot.rotation;
+
+            if (isSalty)
+            {
+                // update isKinematic on rigid bodies
+                //rustyRig.isKinematic = true;
+                //saltyRig.isKinematic = false;
+            }
+            else
+            {
+                // update isKinematic on rigid bodies
+                //rustyRig.isKinematic = false;
+                //saltyRig.isKinematic = true;
+            }
+
+            // zero out X and Z rotation for movement vectors
+            currentCharacter.rotation = Quaternion.Euler(0, currentCharacter.eulerAngles.y, 0);
+
+            // set movement vectors
+            movVertical = currentCharacter.forward * movZ;
+            movHorizontal = currentCharacter.right * movX;
+
+            // set velocity vector direction
+            velocity = (movVertical + movHorizontal).normalized;
+
+            /*// check rigid body velocity to determine if falling or not
+            if (saltyRig.velocity.y < -1.5f)
+            {
+                // falling so multiply by falling speed
+                velocity *= fallingSpeed;
+
+                // update falling / throw bools
+                isFalling = true;
+                saltyAnim.SetBool("isFalling", true);
+                isBeingThrown = false;
+            }
+            else if (!isBeingThrown)
+            {
+                // not falling and not being thrown so multiply by running speed
+                velocity *= runningSpeed;
+                saltyAnim.SetBool("isFalling", false);
+            }
+
+            // update anim bools for falling
+            if (rustyRig.velocity.y < -1.5f)
+            {
+                rustyAnim.SetBool("isFalling", true);
+            }
+            else
+            {
+                rustyAnim.SetBool("isFalling", false);
+            }*/
+
+            // check to see if moving
+            if (velocity != Vector3.zero)
+            {
+                // get new rotation based of movement vectors
+                Quaternion newRot = Quaternion.LookRotation((movVertical + movHorizontal).normalized, Vector3.up);
+
+                // lerp rotation of current character to new rotation
+                if (isSalty)
+                    saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, newRot, 0.05f);
+                else
+                    rustyModelTans.rotation = Quaternion.Lerp(rustyModelTans.rotation, newRot, 0.05f);
+            }
+
+            if (isSalty)
+            {
+                // lerps salty model and collider rotation back to vertical rotation since not climbing
+                saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 0.02f);
+                sCollider.rotation = Quaternion.Lerp(sCollider.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 0.02f);
+            }
+
+            aiTimer += Time.deltaTime;
+
+            if (aiTimer >= 0f)
+            {
+                if (!inRustyHands && !throwActivated)
+                {
+                    // update destinations of NavMesh Agents
+                    if (isSalty)
+                    {
+                        rustyAgent.destination = (saltyRig.position);
+                    }
+                    else
+                    {
+                        // update destination of salty AI
+                        saltyAgent.SetDestination(rustyRig.position);
+                    }
+                }
+                aiTimer = 0f;
+            }
+
+
+
+            // movement code
+            if (isSalty /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
+            {
+                // is salty and can move (nothing in front of salty)
+
+                // calculate new position and move to it
+                Vector3 newPos = salty.transform.position + velocity * Time.deltaTime;
+                //salty.transform.position = (newPos);
+                //saltyRig.velocity = velocity;
+            }
+            
+
+            if (isSalty)
+            {
+                // update anim move vars
+                saltyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
+                rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
+
+                // AI model rotation
+                Quaternion newRot = Quaternion.LookRotation(rusty.transform.forward, Vector3.up);
+                rustyModelTans.rotation = Quaternion.Lerp(rustyModelTans.rotation, newRot, 0.05f);
+            }
+            else
+            {
+                // AI model rotation
+                Quaternion newRot = Quaternion.LookRotation(salty.transform.forward, Vector3.up);
+                saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, newRot, 0.05f);
+            }
+        }
+        else if (isSalty && isClimbing) // isClimbing
+        {
+            // update rusty anim velocity
+            rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
+
+            if (climbStarted)
+            {
+                // set position to raycast hit point + the wall offset
+                posToMove = startHit.point + (startHit.normal * wallOffset);
+
+                // need to lerp and reset climbStarted
+                isLerping = true;
+                climbStarted = false;
+            }
+
+            // set movement vectors based on input and current wall attached to
+            movVertical = up * movZ;
+            movHorizontal = Vector3.Cross(currentWallDir, up.normalized) * -movX;
+
+            // set velocity vector
+            velocity = (movVertical + movHorizontal).normalized * climbingSpeed;
+
+            // get relative new position (changes to raycast hit + offset below)
+            Vector3 newPos = (saltyRig.position + Vector3.up * 0.25f) + velocity * Time.deltaTime;
+
+            //Debug.DrawRay(newPos, saltyModelPlaceHolder.forward, Color.red, 20f, false);
+
+            Vector3 dirToNextPos = Vector3.zero;
+
+            if (velocity != Vector3.zero) // is moving on wall
+            {
+                // update climb movement anim bools
+                saltyAnim.SetBool("isIdleWall", false);
+                saltyAnim.SetBool("isFalling", false);
+
+                // raycast from newPos towards where salty is facing
+                if (Physics.Raycast(newPos, currentWallDir, out RaycastHit hit, turnThresh, LayerMask.GetMask("Climable Walls")))
+                {
+
+                    // check if the wall hit has a different normal than current wall
+                    if (currentWallDir != -1 * hit.normal)
+                    {
+                        // it is so going to have to lerp position to new position on next wall
+                        isLerping = true;
+                    }
+
+                    // update current wall direction to new wall
+                    currentWallDir = -1 * hit.normal;
+
+                    // update new position to hit point plus wall offset
+                    newPos = (hit.point - Vector3.up * 0.25f) + (hit.normal * wallOffset);
+
+                    // update position to move to new position
+                    posToMove = newPos;
+
+                    // update direction to next position
+                    dirToNextPos = newPos - saltyRig.position;
+                }
+
+                //Debug.DrawRay(newPos, saltyModelPlaceHolder.forward, Color.red, 20f, false);
+            }
+            else // hanging on the wall
+            {
+                // update climb movement anim bools
+                saltyAnim.SetBool("isIdleWall", true);
+                saltyAnim.SetBool("isFalling", false);
+            }
+
+            if (isLerping) // position to move is on a new wall so lerp position
+            {
+                Vector3 tempPos = saltyModelTrans.position;
+
+                // update position to position to move
+                salty.transform.position = (posToMove);
+
+                // lerp model rotation to position to move
+                saltyModelTrans.position = Vector3.Lerp(tempPos, posToMove, 0.02f);
+
+                // if model position is at lerp position, then don't need to keep lerping
+                if (Vector3.Distance(saltyModelTrans.position, posToMove) < 0.02f)
+                {
+                    saltyModelTrans.position = posToMove;
+                    isLerping = false;
+                }
+
+            }
+            else // position to move is on same wall so just update the new position
+            {
+                saltyRig.MovePosition(posToMove);
+            }
+
+            // set rotation for salty model placeholder
+            saltyModelPlaceHolder.rotation = Quaternion.LookRotation(currentWallDir, up);
+
+            // **** CURRENTLY NOT ROTATING CHARACTER TRANS WHEN CLIMBING ****
+            // Quaternion newYRot = Quaternion.Euler(n.x, n.y, n.z);
+            // salty.transform.rotation = Quaternion.Lerp(salty.transform.rotation, newYRot, 0.005f);
+
+            // lerp the rotation of the model and collider to placeHolder rotation (new rotation)
+            saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, saltyModelPlaceHolder.rotation, 0.009f);
+            sCollider.rotation = Quaternion.Lerp(saltyModelTrans.rotation, saltyModelPlaceHolder.rotation, 0.009f);
+        }
+        else if (inRustyHands)
+        {
+            // lerp salty's position to center of rusty's hands
+            salty.transform.position = Vector3.Lerp(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward * 0.25f), 0.05f);
+
+            // reset anim bool
+            saltyAnim.SetBool("isReadyForThrow", false);
+
+            // lerp salty's model rotation to rusty's rotation
+            saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, rustyModelTans.rotation, 0.05f);
+        }
+        else if (throwActivated)
+        {
+            // turn isKinematic off for salty and gravity back on
+            saltyRig.isKinematic = false;
+            saltyRig.useGravity = true;
+
+            // add a force towards the end position and upwards
+            saltyRig.AddForce(((endThrowPoint.position - saltyRig.position).normalized + Vector3.up) * 22f, ForceMode.Impulse);
+
+            // turn collider back on and reset throwActivated
+            sCollider.gameObject.SetActive(true);
+            throwActivated = false;
+
+            // switch to salty
+            isSalty = true;
+            ButtonScript.isSalty = true;
+
+            // update parent of cam pivot placeholder
+            camPivotPlaceHolder.SetParent(saltyPos);
+
+            // update Nav Agents
+            rustyAgent.enabled = true;
+            saltyAgent.enabled = false;
+
+            // update bools
+            isBeingThrown = true;
+            isFalling = true;
+            saltyAnim.SetBool("isFalling", true);
+            isSwitching = true;
+        }
+
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 movHorizontal;
+        Vector3 movVertical;
+        
+        if(isSalty)
+        {
+            rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            saltyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            saltyRig.interpolation = RigidbodyInterpolation.Interpolate;
+            rustyRig.interpolation = RigidbodyInterpolation.None;
+        }
+        else
+        {
+            saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            rustyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            rustyRig.interpolation = RigidbodyInterpolation.Interpolate;
+            saltyRig.interpolation = RigidbodyInterpolation.None;
+        }
+
+        if (!isClimbing && !inRustyHands && !throwActivated)
+        {
             // update current character position and rotation
             currentCharacter.position = camPivotPlaceHolder.position;
             currentCharacter.rotation = cameraPivot.rotation;
@@ -363,8 +692,39 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // set velocity vector direction
             velocity = (movVertical + movHorizontal).normalized;
 
+            int playerMask = LayerMask.GetMask("Salty") | LayerMask.GetMask("Rusty");
+
+            if (isSalty && !Physics.Raycast(salty.transform.position + Vector3.up*0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
+            {
+                velocity *= fallingSpeed;
+
+                // update falling / throw bools
+                isFalling = true;
+                saltyAnim.SetBool("isFalling", true);
+            }
+            else if(isSalty)
+            {
+                velocity *= runningSpeed;
+                isFalling = false;
+                saltyAnim.SetBool("isFalling", false);
+            }
+
+            
+            if (!isSalty && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
+            {
+                velocity *= fallingSpeed;
+                isFalling = true;
+                rustyAnim.SetBool("isFalling", true);
+            }
+            else if (!isSalty)
+            {
+                velocity *= runningSpeed;
+                rustyAnim.SetBool("isFalling", false);
+                isFalling = false;
+            }
+            /*
             // check rigid body velocity to determine if falling or not
-            if(saltyRig.velocity.y < -1.5f)
+            if (saltyRig.velocity.y < -1.5f)
             {
                 // falling so multiply by falling speed
                 velocity *= fallingSpeed;
@@ -378,72 +738,47 @@ public class Salty_Rusty_Controller : MonoBehaviour
             {
                 // not falling and not being thrown so multiply by running speed
                 velocity *= runningSpeed;
+                
                 saltyAnim.SetBool("isFalling", false);
-            }
+            }*/
 
-            // update anim bools for falling
-            if(rustyRig.velocity.y < -1.5f)
+            if(jumpActivated && isSalty && !isFalling)
             {
-                rustyAnim.SetBool("isFalling", true);
+                saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
+                jumpActivated = false;
             }
-            else
+            else if(jumpActivated && !isSalty && !isFalling)
             {
-                rustyAnim.SetBool("isFalling", false);
+                rustyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
+                jumpActivated = false;
             }
 
-            // check to see if moving
-            if (velocity != Vector3.zero)
+            if (isSalty && isFalling && saltyRig.velocity.y < 0f)
             {
-                // get new rotation based of movement vectors
-                Quaternion newRot = Quaternion.LookRotation((movVertical + movHorizontal).normalized, Vector3.up);
-
-                // lerp rotation of current character to new rotation
-                if (isSalty)
-                    saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, newRot, 0.05f);
-                else
-                    rustyModelTans.rotation = Quaternion.Lerp(rustyModelTans.rotation, newRot, 0.05f);
+                saltyRig.AddForce(Vector3.down * 12, ForceMode.Force);
             }
-            
-            if(isSalty)
+            else if (!isSalty && isFalling && rustyRig.velocity.y < 0f)
             {
-                // lerps salty model and collider rotation back to vertical rotation since not climbing
-                saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 0.02f);
-                sCollider.rotation = Quaternion.Lerp(sCollider.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 0.02f);
+                rustyRig.AddForce(Vector3.down * 12, ForceMode.Force);
             }
 
-            if (!inRustyHands && !throwActivated)
-            {
-                // update destinations of NavMesh Agents
-                if (isSalty)
-                {
-                    // update destination of rusty AI
-                    if (velocity != Vector3.zero)
-                    {
-                        rustyAgent.destination = (salty.transform.position);
-                    }
-                    else
-                    {
-
-                        rustyAgent.destination = (salty.transform.position);
-                        //rustyAgent.velocity = velocity;
-                    }
-
-                }
-                else
-                {
-                    // update destination of salty AI
-                    saltyAgent.SetDestination(rusty.transform.position);
-                }
-            }
 
             // movement code
-            if (isSalty /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
+            if (isSalty && (movZ != 0 || movX != 0) /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
             {
                 // is salty and can move (nothing in front of salty)
 
                 // calculate new position and move to it
-                Vector3 newPos = salty.transform.position + velocity * Time.deltaTime;
-                salty.transform.position = (newPos);
+                Vector3 newPos = saltyRig.position + velocity * Time.fixedDeltaTime;
+                Vector3 actualVelocity = new Vector3(velocity.x, saltyRig.velocity.y, velocity.z);
+
+                saltyRig.velocity = actualVelocity;
+                //saltyRig.MovePosition(newPos);
+            }
+            else if (isSalty && movZ == 0 && movX == 0)
+            {
+                Vector3 actualVelocity = new Vector3(0f, saltyRig.velocity.y, 0f);
+                saltyRig.velocity = actualVelocity;
             }
             else if (!isSalty)
             {
@@ -455,14 +790,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                 RaycastHit blockHit;
 
-                //Debug.Log(Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f, rustyModelTans.forward, LayerMask.GetMask("Climable Walls")));
-
-                if (velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up*0.1f + -rustyModelTans.forward*0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
+                if (velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
                 {
                     // ladder in front so climb
 
                     // set velocity to up direction and turn off gravity
-                    velocity = Vector3.up*1.5f;
+                    velocity = Vector3.up * 1.5f;
                     rustyRig.useGravity = false;
 
                     // update anim bools
@@ -500,237 +833,27 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // calculate new position and move to it
-                Vector3 newPos = rusty.transform.position + velocity * Time.deltaTime;
-                rusty.transform.position = (newPos);
-            }
+                //Vector3 newPos = rusty.transform.position + velocity * Time.deltaTime;
+                //rusty.transform.position = (newPos);
 
-            if (isSalty)
-            {
-                // update anim move vars
-                saltyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
-                rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
-
-                // AI model rotation
-                Quaternion newRot = Quaternion.LookRotation(rusty.transform.forward, Vector3.up);
-                rustyModelTans.rotation = Quaternion.Lerp(rustyModelTans.rotation, newRot, 0.05f);
-            }
-            else
-            {
-                // AI model rotation
-                Quaternion newRot = Quaternion.LookRotation(salty.transform.forward, Vector3.up);
-                saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, newRot, 0.05f);
-            }
-        }
-        else if (isSalty && isClimbing) // isClimbing
-        {
-            // update rusty anim velocity
-            rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
-
-            if (climbStarted)
-            {
-                // set position to raycast hit point + the wall offset
-                posToMove = startHit.point + (startHit.normal * wallOffset);
-
-                // need to lerp and reset climbStarted
-                isLerping = true;
-                climbStarted = false;
-            }
-            
-            // set movement vectors based on input and current wall attached to
-            movVertical = up * movZ;
-            movHorizontal = Vector3.Cross(currentWallDir, up.normalized) * -movX;
-
-            // set velocity vector
-            velocity = (movVertical + movHorizontal).normalized * climbingSpeed;
-            
-            // get relative new position (changes to raycast hit + offset below)
-            Vector3 newPos = (saltyRig.position + Vector3.up*0.25f) + velocity * Time.deltaTime;
-
-            //Debug.DrawRay(newPos, saltyModelPlaceHolder.forward, Color.red, 20f, false);
-
-            Vector3 dirToNextPos = Vector3.zero;
-
-            if (velocity != Vector3.zero) // is moving on wall
-            {
-                // update climb movement anim bools
-                saltyAnim.SetBool("isIdleWall", false);
-                saltyAnim.SetBool("isFalling", false);
-
-                // raycast from newPos towards where salty is facing
-                if (Physics.Raycast(newPos, currentWallDir, out RaycastHit hit, turnThresh, LayerMask.GetMask("Climable Walls")))
+                
+                if (movZ != 0 || movX != 0)
                 {
-
-                    // check if the wall hit has a different normal than current wall
-                    if (currentWallDir != -1 * hit.normal)
-                    {
-                        // it is so going to have to lerp position to new position on next wall
-                        isLerping = true;
-                    }
-
-                    // update current wall direction to new wall
-                    currentWallDir = -1 * hit.normal;
-
-                    // update new position to hit point plus wall offset
-                    newPos = (hit.point - Vector3.up*0.25f) + (hit.normal * wallOffset);
-
-                    // update position to move to new position
-                    posToMove = newPos;
-
-                    // update direction to next position
-                    dirToNextPos = newPos - saltyRig.position;
+                    Vector3 actualVelocity;
+                    actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);
+                    Debug.Log(actualVelocity);
+                    rustyRig.velocity = actualVelocity;
                 }
-
-                //Debug.DrawRay(newPos, saltyModelPlaceHolder.forward, Color.red, 20f, false);
-            }
-            else // hanging on the wall
-            {
-                // update climb movement anim bools
-                saltyAnim.SetBool("isIdleWall", true);
-                saltyAnim.SetBool("isFalling", false);
-            }
-
-            if (isLerping) // position to move is on a new wall so lerp position
-            {
-                Vector3 tempPos = saltyModelTrans.position;
-
-                // update position to position to move
-                salty.transform.position = (posToMove);
-
-                // lerp model rotation to position to move
-                saltyModelTrans.position = Vector3.Lerp(tempPos, posToMove, 0.02f);
-
-                // if model position is at lerp position, then don't need to keep lerping
-                if(Vector3.Distance(saltyModelTrans.position, posToMove) < 0.02f)
+                else if (movZ == 0 && movX == 0)
                 {
-                    saltyModelTrans.position = posToMove;
-                    isLerping = false;
+                    Vector3 actualVelocity;
+                    actualVelocity = new Vector3(0f, rustyRig.velocity.y, 0f);
+                    rustyRig.velocity = actualVelocity;
                 }
-
             }
-            else // position to move is on same wall so just update the new position
-            {
-                saltyRig.MovePosition(posToMove);
-            }
-
-            // set rotation for salty model placeholder
-            saltyModelPlaceHolder.rotation = Quaternion.LookRotation(currentWallDir, up);
-
-            // **** CURRENTLY NOT ROTATING CHARACTER TRANS WHEN CLIMBING ****
-            // Quaternion newYRot = Quaternion.Euler(n.x, n.y, n.z);
-            // salty.transform.rotation = Quaternion.Lerp(salty.transform.rotation, newYRot, 0.005f);
-
-            // lerp the rotation of the model and collider to placeHolder rotation (new rotation)
-            saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, saltyModelPlaceHolder.rotation, 0.009f);
-            sCollider.rotation = Quaternion.Lerp(saltyModelTrans.rotation, saltyModelPlaceHolder.rotation, 0.009f);
         }
-        else if(inRustyHands)
-        {
-            // lerp salty's position to center of rusty's hands
-            salty.transform.position = Vector3.Lerp(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward*0.25f), 0.05f);
-
-            // reset anim bool
-            saltyAnim.SetBool("isReadyForThrow", false);
-
-            // lerp salty's model rotation to rusty's rotation
-            saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, rustyModelTans.rotation, 0.05f);
-        }
-        else if(throwActivated)
-        {
-            // turn isKinematic off for salty and gravity back on
-            saltyRig.isKinematic = false;
-            saltyRig.useGravity = true;
-
-            // add a force towards the end position and upwards
-            saltyRig.AddForce(((endThrowPoint.position - saltyRig.position).normalized + Vector3.up)*22f, ForceMode.Impulse);
-
-            // turn collider back on and reset throwActivated
-            sCollider.gameObject.SetActive(true);
-            throwActivated = false;
-            
-            // switch to salty
-            isSalty = true;
-            ButtonScript.isSalty = true;
-
-            // update parent of cam pivot placeholder
-            camPivotPlaceHolder.SetParent(saltyPos);
-
-            // update Nav Agents
-            rustyAgent.enabled = true;
-            saltyAgent.enabled = false;
-
-            // update bools
-            isBeingThrown = true;
-            isFalling = true;
-            saltyAnim.SetBool("isFalling", true);
-            isSwitching = true;
-        }
-        
+        movX = 0f;
+        movZ = 0f;
     }
 
-    private void FixedUpdate()
-    {
-        Vector3 movHorizontal;
-        Vector3 movVertical;
-
-        if (!isClimbing && !inRustyHands && !throwActivated)
-        {
-            // update current character position and rotation
-            currentCharacter.position = camPivotPlaceHolder.position;
-            currentCharacter.rotation = cameraPivot.rotation;
-
-            if (isSalty)
-            {
-                // update isKinematic on rigid bodies
-                rustyRig.isKinematic = true;
-                saltyRig.isKinematic = false;
-            }
-            else
-            {
-                // update isKinematic on rigid bodies
-                rustyRig.isKinematic = false;
-                saltyRig.isKinematic = true;
-            }
-
-            // zero out X and Z rotation for movement vectors
-            currentCharacter.rotation = Quaternion.Euler(0, currentCharacter.eulerAngles.y, 0);
-
-            // set movement vectors
-            movVertical = currentCharacter.forward * movZ;
-            movHorizontal = currentCharacter.right * movX;
-
-            // set velocity vector direction
-            velocity = (movVertical + movHorizontal).normalized;
-
-            // check rigid body velocity to determine if falling or not
-            if (saltyRig.velocity.y < -1.5f)
-            {
-                // falling so multiply by falling speed
-                velocity *= fallingSpeed;
-
-                // update falling / throw bools
-                isFalling = true;
-                saltyAnim.SetBool("isFalling", true);
-                isBeingThrown = false;
-            }
-            else if (!isBeingThrown)
-            {
-                // not falling and not being thrown so multiply by running speed
-                velocity *= runningSpeed;
-                saltyAnim.SetBool("isFalling", false);
-            }
-
-
-
-            // movement code
-            if (isSalty /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
-            {
-                // is salty and can move (nothing in front of salty)
-
-                // calculate new position and move to it
-                //Vector3 newPos = salty.transform.position + velocity * Time.fixedDeltaTime;
-                //salty.transform.position = (newPos);
-            }
-        }
-
-    }
 }
