@@ -14,6 +14,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public float fallingSpeed = 1.5f;
     public float pushSpeed = 0.3f;
 
+    public float meleeSnapSpeed = 4f;
+
     public Transform cameraPivot;
     public GameObject salty;
     public GameObject rusty;
@@ -39,6 +41,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public Transform rustyRightHand;
     public Transform rustyLeftHand;
 
+    public static Vector3 meleeTargetPosition;
+    public static bool targetInRange;
+
     private Animator saltyAnim, rustyAnim;
     private Rigidbody saltyRig, rustyRig;
     private Transform saltyPos, rustyPos, currentCharacter;
@@ -50,6 +55,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private bool throwActivated;
     private bool isBeingThrown;
     private bool startSwitchVFX;
+
+    private bool punchKeyDown;
+    private bool punchActivated;
 
     private bool jumpActivated;
 
@@ -66,6 +74,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private Quaternion newRot;
     private Quaternion newRot2;
+
+    private bool inPunchAnimation;
 
     //Whether we are currently interpolating or not
     private bool _isLerping;
@@ -175,6 +185,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
         Quaternion rot = Quaternion.LookRotation((tempVert + tempHor).normalized, Vector3.up);
 
         rotInc = (salty.transform.rotation.eulerAngles.y - rot.eulerAngles.y)/2;
+
+        punchKeyDown = false;
+        punchActivated = false;
+
+        meleeTargetPosition = Vector3.zero;
+        targetInRange = false;
+
+        inPunchAnimation = false;
     }
 
 
@@ -192,6 +210,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         climbKeyDown = Input.GetKeyDown("r");
         throwKeyDown = Input.GetKeyDown("v");
         jumpKeyDown = Input.GetKeyDown("space");
+        punchKeyDown = Input.GetMouseButtonDown(0);
 
         // get camera input
         mouseX += Input.GetAxis("Mouse X") * Time.deltaTime * mouseSens;
@@ -335,12 +354,28 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // update bools
             throwActivated = true;
             inRustyHands = false;
+            // reset anim bool
+            saltyAnim.SetBool("isReadyForThrow", false);
         }
+
+        if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands)
+        {
+            punchActivated = true;
+            rustyAnim.SetBool("punchActivated", true);
+        }
+        
+        if(!punchKeyDown && punchActivated)
+        {
+            punchActivated = false;
+            rustyAnim.SetBool("punchActivated", false);
+        }
+
 
         // reset keys
         throwKeyDown = false;
         climbKeyDown = false;
         jumpKeyDown = false;
+        punchKeyDown = false;
 
         Vector3 movVertical;
         Vector3 movHorizontal;
@@ -417,11 +452,34 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
 
             // check to see if moving
-            if (velocity != Vector3.zero)
+            if ((velocity != Vector3.zero && !inPunchAnimation) || (targetInRange && inPunchAnimation))
             {
                 // get new rotation based of movement vectors
-                newRot = Quaternion.LookRotation((movVertical + movHorizontal).normalized, Vector3.up);
-                newRot2 = Quaternion.Euler(pushCollider.eulerAngles.x, newRot.eulerAngles.y, pushCollider.eulerAngles.z);
+
+                if(isSalty)
+                {
+                    newRot = Quaternion.LookRotation((movVertical + movHorizontal).normalized, Vector3.up);
+                    newRot2 = Quaternion.Euler(pushCollider.eulerAngles.x, newRot.eulerAngles.y, pushCollider.eulerAngles.z);
+                }
+                else
+                {
+                    if (inPunchAnimation && targetInRange)
+                    {
+                        
+                        Debug.DrawRay(rusty.transform.position, (meleeTargetPosition - rusty.transform.position).normalized, Color.cyan);
+
+
+                        newRot = Quaternion.LookRotation((meleeTargetPosition - rusty.transform.position).normalized, Vector3.up);
+                    }
+                    else 
+                    {
+                        newRot = Quaternion.LookRotation((movVertical + movHorizontal).normalized, Vector3.up);
+                    }
+
+
+                    newRot2 = Quaternion.Euler(pushCollider.eulerAngles.x, newRot.eulerAngles.y, pushCollider.eulerAngles.z);
+                }
+                
 
                 // lerp rotation of current character to new rotation
                 if(isSalty)
@@ -500,9 +558,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             // lerp salty's position to center of rusty's hands
             //salty.transform.position = Vector3.Lerp(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward * 0.25f), 0.05f);
-
-            // reset anim bool
-            saltyAnim.SetBool("isReadyForThrow", false);
 
             // lerp salty's model rotation to rusty's rotation
             saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, rustyModelTans.rotation, 5f * Time.deltaTime);
@@ -648,7 +703,19 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                 RaycastHit blockHit;
 
-                if (velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
+                
+
+                if(Animator.StringToHash("punch_1") == rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash)
+                {
+                    //Debug.Log("Yoooooo");
+                    inPunchAnimation = true;
+                }
+                else
+                {
+                    inPunchAnimation = false;
+                }
+
+                if (!inPunchAnimation && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
                 {
                     // ladder in front so climb
                     rustyIsClimbing = true;
@@ -665,7 +732,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     rustyAnim.SetBool("isPushing", false);
                     rustyAnim.SetBool("isClimbing", true);
                 }
-                else if (velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, out blockHit, 1.2f, LayerMask.GetMask("PushableBlocks")))
+                else if (!inPunchAnimation && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, out blockHit, 1.2f, LayerMask.GetMask("PushableBlocks")))
                 {
                     // pushable block in front so push block
 
@@ -687,6 +754,24 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     Rigidbody blockRig = blockHit.transform.gameObject.GetComponent<Rigidbody>();
                     blockRig.velocity = new Vector3(velocity.x, blockRig.velocity.y, velocity.z);              
                 }
+                else if(inPunchAnimation)
+                {
+                    pushCollider.gameObject.SetActive(false);
+
+                    if(targetInRange)
+                    {
+                        velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
+                    }
+                    else
+                    {
+                        velocity = Vector3.zero;
+                    }
+
+                    // update anim bools and turn gravity back on
+                    rustyAnim.SetBool("isPushing", false);
+                    rustyRig.useGravity = true;
+                    rustyAnim.SetBool("isClimbing", false);
+                }
                 else
                 {
                     // not pushing or climbing
@@ -701,7 +786,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // rusty movement code
-                if (movZ != 0 || movX != 0)
+                if ((movZ != 0 || movX != 0) || inPunchAnimation)
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);

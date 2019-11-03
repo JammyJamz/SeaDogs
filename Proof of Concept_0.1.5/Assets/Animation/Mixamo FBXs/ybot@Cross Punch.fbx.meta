@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 54d0af4b62a8a534ca1777a84dd4f86a
+guid: 71989b027650f52468d6eb8943629c79
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable:
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: mixamo.com
+      name: Cross Punch
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 1
+      lastFrame: 120
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -98,16 +98,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips:
-  - 12e70cb9a0029674ab3fecbfaa1e4112
-  - 71989b027650f52468d6eb8943629c79
-  - db706784934f477439898f81c2a8639a
-  - bbc1b6793f76eb241844206a285cea38
-  - 6fef3560ef91c4042a35de79469e81c4
-  - a488cc8af91a3cd429e0e010d414bdb8
-  - 2bfa5f7c4fb9f804a90a08e2845df6b9
-  - 10484c30d80f5694698d5970434b90a2
-  - d4da37c9b0397c840a8a51b30542eab5
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
