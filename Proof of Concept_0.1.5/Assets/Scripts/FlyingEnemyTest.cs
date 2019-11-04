@@ -18,6 +18,9 @@ public class FlyingEnemyTest : MonoBehaviour
     public Transform target;
     public Transform guide;
 
+    public Transform saltyPos;
+    public Transform rustyPos;
+
     private float distance;
     private float x, y, z;
     private float counter;
@@ -35,14 +38,26 @@ public class FlyingEnemyTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        //target = GameObject.FindGameObjectWithTag("Player").transform;
         startPos = transform.position;
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void Update()
     {
+        if(Salty_Rusty_Controller.isSalty)
+        {
+            Debug.Log("salty");
+            target = saltyPos;
+        }
+        else
+        {
+            target = rustyPos;
+        }
+    
+
+    // Update is called once per frame
+    
         distance = Vector3.Distance(target.position, transform.position);
         Vector3 targetDir = guide.position - transform.position;
 

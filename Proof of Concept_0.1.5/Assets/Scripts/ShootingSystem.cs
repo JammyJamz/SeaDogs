@@ -21,13 +21,14 @@ public class ShootingSystem : MonoBehaviour
 
     private void Awake()
     {
-        target = GameObject.FindGameObjectsWithTag("Player")[0];
-        targetTransform = target.transform;
+        
     }
 
     private void Start()
     {
-
+        target = GameObject.FindGameObjectsWithTag("Player")[0];
+        Debug.Log(target.name);
+        targetTransform = target.transform;
     }
 
     // Update is called once per frame
@@ -98,7 +99,7 @@ public class ShootingSystem : MonoBehaviour
         {
             if (projectileSpawns[i])
             {
-                GameObject proj = Instantiate(projectile, projectileSpawns[i].transform.position, Quaternion.Euler(projectileSpawns[i].transform.forward)) as GameObject;
+                GameObject proj = Instantiate(projectile, projectileSpawns[i].transform.position, Quaternion.Euler(projectileSpawns[i].transform.forward));
                 proj.GetComponent<BaseProjectile>().FireProjectile(projectileSpawns[i], target);
 
                 lastProjectiles.Add(proj);

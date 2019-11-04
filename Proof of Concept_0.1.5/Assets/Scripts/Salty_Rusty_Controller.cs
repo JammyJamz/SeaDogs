@@ -43,6 +43,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     public static Vector3 meleeTargetPosition;
     public static bool targetInRange;
+    public static bool isSalty;
 
     private Animator saltyAnim, rustyAnim;
     private Rigidbody saltyRig, rustyRig;
@@ -51,7 +52,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private Vector3 fixRotation, posToMove, velocity, nonClimbingRot, currentWallDir, up;
     private RaycastHit startHit, lastHit;
     private Quaternion exitRotationTarget;
-    private bool isSalty, climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands, jumpKeyDown;
+    private bool climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands, jumpKeyDown;
     private bool throwActivated;
     private bool isBeingThrown;
     private bool startSwitchVFX;
