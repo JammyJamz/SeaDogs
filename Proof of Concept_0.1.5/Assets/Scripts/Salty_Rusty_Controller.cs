@@ -75,7 +75,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private Quaternion newRot;
     private Quaternion newRot2;
 
-    private bool inPunchAnimation;
+    public static bool inPunchAnimation;
 
     //Whether we are currently interpolating or not
     private bool _isLerping;
@@ -358,17 +358,18 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyAnim.SetBool("isReadyForThrow", false);
         }
 
-        if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands)
+        if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !isFalling)
         {
             punchActivated = true;
             rustyAnim.SetBool("punchActivated", true);
+            rustyRig.velocity = Vector3.zero;
         }
         
-        if(!punchKeyDown && punchActivated)
+        /*if(!punchKeyDown && punchActivated)
         {
             punchActivated = false;
             rustyAnim.SetBool("punchActivated", false);
-        }
+        }*/
 
 
         // reset keys
@@ -756,11 +757,19 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
                 else if(inPunchAnimation)
                 {
+                    if(punchActivated)
+                    {
+                        rustyRig.velocity = Vector3.zero;
+                        punchActivated = false;
+                        rustyAnim.SetBool("punchActivated", false);
+                    }
                     pushCollider.gameObject.SetActive(false);
 
                     if(targetInRange)
                     {
-                        velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
+                        Debug.Log("hryy");
+                        //velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
+                        rustyRig.AddForce((meleeTargetPosition - rusty.transform.position).normalized*25f, ForceMode.Force);
                     }
                     else
                     {
@@ -786,13 +795,13 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // rusty movement code
-                if ((movZ != 0 || movX != 0) || inPunchAnimation)
+                if ((movZ != 0 || movX != 0) && !inPunchAnimation)
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);
                     rustyRig.velocity = actualVelocity;
                 }
-                else if (movZ == 0 && movX == 0)
+                else if (movZ == 0 && movX == 0 && !inPunchAnimation)
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(0f, rustyRig.velocity.y, 0f);

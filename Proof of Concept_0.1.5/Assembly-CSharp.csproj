@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="Assets\CoinScript.cs" />
     <Compile Include="Assets\FPS.cs" />
+    <Compile Include="Assets\MeleeDetection.cs" />
     <Compile Include="Assets\PortalToHubScript.cs" />
     <Compile Include="Assets\Scripts\BaseProjectile.cs" />
     <Compile Include="Assets\Scripts\BreakableBoxScript.cs" />

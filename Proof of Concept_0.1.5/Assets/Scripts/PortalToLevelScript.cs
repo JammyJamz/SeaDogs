@@ -19,6 +19,6 @@ public class PortalToLevelScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        SceneManager.LoadScene("White Box 2");
+        SceneManager.LoadScene("Temple White Box");
     }
 }

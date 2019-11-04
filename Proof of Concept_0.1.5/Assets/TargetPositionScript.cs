@@ -20,8 +20,15 @@ public class TargetPositionScript : MonoBehaviour
     {
         if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
         {
-            Salty_Rusty_Controller.targetInRange = true;
             Salty_Rusty_Controller.meleeTargetPosition = transform.parent.position;
+        }
+    }
+
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
+        {
+            Salty_Rusty_Controller.targetInRange = true;
         }
     }
 

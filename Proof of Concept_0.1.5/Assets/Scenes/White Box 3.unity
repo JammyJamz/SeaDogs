@@ -50,7 +50,7 @@ LightmapSettings:
     m_BounceScale: 1
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
-    m_EnvironmentLightingMode: 0
+    m_EnvironmentLightingMode: 1
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
@@ -1610,8 +1610,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1538396899}
-  m_LocalRotation: {x: 0.0825406, y: 0.60417074, z: 0.06312076, w: -0.790051}
-  m_LocalPosition: {x: 3.8786218, y: 0.7670002, z: -1.0529261}
+  m_LocalRotation: {x: -0.08832296, y: 0.087678865, z: 0.008118088, w: 0.9921924}
+  m_LocalPosition: {x: -82.49515, y: -141.112, z: -204.27507}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
