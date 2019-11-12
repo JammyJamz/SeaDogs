@@ -1286,6 +1286,7 @@ GameObject:
   - component: {fileID: 6988625159054903376}
   - component: {fileID: 8910399441905417922}
   - component: {fileID: 38674634193900178}
+  - component: {fileID: 7478610265006551336}
   m_Layer: 0
   m_Name: pSphere4
   m_TagString: Untagged
@@ -1352,6 +1353,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &7478610265006551336
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7766053781810010983}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: -5750084716789328873, guid: 8c28ccf4897844bd294688ff347710fd, type: 3}
 --- !u!1 &7996294428732134010
 GameObject:
   m_ObjectHideFlags: 0
