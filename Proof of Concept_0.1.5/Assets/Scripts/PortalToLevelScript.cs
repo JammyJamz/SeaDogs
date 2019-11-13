@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class PortalToLevelScript : MonoBehaviour
 {
+
+    public string scene;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +23,6 @@ public class PortalToLevelScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        SceneManager.LoadScene("Temple White Box");
+        SceneManager.LoadScene(scene);
     }
 }

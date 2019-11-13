@@ -249,7 +249,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
 
         // switch key pressed
-        if (switchKeyDown && !isClimbing && !inRustyHands && !isBeingThrown)
+        if (switchKeyDown && !isClimbing && !inRustyHands && !isBeingThrown && !inPunchAnimation && !inPunchAnimationTwo)
         {
             // salty is not climbing so allowed to switch
 
@@ -702,7 +702,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
             }
-            else if(jumpActivated && !isSalty && !isFalling)
+            else if(jumpActivated && !isSalty && !isFalling && !rustyIsClimbing)
             {
                 rustyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
@@ -720,7 +720,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             
 
             // movement code
-            if (!isBeingThrown && isSalty && (movZ != 0 || movX != 0) /*&& !Physics.Raycast(salty.transform.position + Vector3.up, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore)*/)
+            if (!isBeingThrown && isSalty && (movZ != 0 || movX != 0) && !Physics.Raycast(salty.transform.position + Vector3.up*0.4f, saltyModelTrans.forward, 0.6f, ~LayerMask.GetMask("Salty"), QueryTriggerInteraction.Ignore))
             {
                 // is salty and can move (nothing in front of salty)
 
@@ -851,7 +851,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // rusty movement code
-                if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo)
+                if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.4f, rustyModelTans.forward, 0.6f, ~LayerMask.GetMask("Rusty"), QueryTriggerInteraction.Ignore))
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);

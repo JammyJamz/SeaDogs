@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class LedgeTriggerScript : MonoBehaviour
 {
+
+    public Transform ledgePos;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,11 +25,13 @@ public class LedgeTriggerScript : MonoBehaviour
         if (collider.gameObject.tag == "saltyLeftHand")
         {
             Salty_Rusty_Controller.saltyLeftHandInTrigger = true;
+            SaltyIKControl.ledgePosition = ledgePos.position;
             SaltyIKControl.saltyLeftHandInTrigger = true;
         }
         else if (collider.gameObject.tag == "saltyRightHand")
         {
             Salty_Rusty_Controller.saltyRightHandInTrigger = true;
+            SaltyIKControl.ledgePosition = ledgePos.position;
             SaltyIKControl.saltyRightHandInTrigger = true;
         }
     }

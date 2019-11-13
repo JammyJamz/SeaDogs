@@ -18,9 +18,12 @@ EditorBuildSettings:
     path: Assets/Scenes/White Box 2.unity
     guid: 904d7aa63c7c9ba48bf38b0836e72fbe
   - enabled: 1
-    path: Assets/Scenes/Temple White Box.unity
+    path: Assets/Scenes/Temple Whitebox.unity
     guid: 3471a2ac1f721bb4aba558ae1a7c91bc
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scenes/Jungle Whitebox.unity
+    guid: fd51ef91b55c3ce4ebbe045833bc2d35
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1

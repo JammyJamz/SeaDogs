@@ -10,7 +10,7 @@ public class SaltyIKControl : MonoBehaviour
 
     public float positionWeight;
 
-    public Transform ledgePosition;
+    public static Vector3 ledgePosition;
 
     public Transform saltyModel;
 
@@ -47,7 +47,7 @@ public class SaltyIKControl : MonoBehaviour
             Vector3 tempPos = animator.GetIKPosition(AvatarIKGoal.LeftHand);
             Vector3 tempPos2 = animator.GetIKPosition(AvatarIKGoal.RightHand);
 
-            tempPos = new Vector3(tempPos.x, ledgePosition.position.y, tempPos.z);
+            tempPos = new Vector3(tempPos.x, ledgePosition.y, tempPos.z);
             //tempPos2 = new Vector3(tempPos2.x, ledgePosition.position.y, tempPos2.z);
 
             RaycastHit hit;
