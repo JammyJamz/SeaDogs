@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class OptionsMenu : MonoBehaviour
 {
 
-    //public AudioMixer audioMixer;
+    public AudioMixer audioMixer;
     public Dropdown resolutionDropDown;
 
     private Resolution[] resolutions;
@@ -49,13 +49,13 @@ public class OptionsMenu : MonoBehaviour
         Debug.Log(newResolution.height);
     }
 
-   // public void SetVolume (float volume)
-   // {
+    public void SetVolume (float volume)
+    {
         // name this the same way as you name the audio parameter under the audio mixer. Ensure when adding script that when On Click is added to click on the dynamic int option (topmost option).
         // Dynamic int - sets the amount based on the UI interaction with player, I.E. if the player slides the volume slider to 0 the game updates itself to state that no audio will be used.
 
-    //    audioMixer.SetFloat("volume", volume);
-   // }
+        audioMixer.SetFloat("volume", volume);
+    }
 
     public void SetQuality (int qualityIndex)
     {

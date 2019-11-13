@@ -3802,14 +3802,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2070560590}
     - target: {fileID: 810979552, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
-      propertyPath: rightHandObj
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 810979552, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
-      propertyPath: lookObj
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 810979552, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
       propertyPath: leftPoints.Array.data[0]
       value: 
       objectReference: {fileID: 1973336164}
@@ -3905,15 +3897,6 @@ PrefabInstance:
       propertyPath: rightHandPoints.Array.data[5]
       value: 
       objectReference: {fileID: 243304671}
-    - target: {fileID: 3804878222206896829, guid: 486bace523b8b05459ec5fc95285c3e8,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1315555787, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
-      propertyPath: ledgePosition
-      value: 
-      objectReference: {fileID: 1880506000}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 486bace523b8b05459ec5fc95285c3e8, type: 3}
 --- !u!1 &1550921533
@@ -4747,12 +4730,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1748575119132402165}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &1880506000 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1880506000, guid: 8b542d649d0b8a249893c4beabadb5f1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4117126146147296113}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1906988554
 GameObject:
   m_ObjectHideFlags: 0
@@ -5034,11 +5011,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 122724113}
     m_Modifications:
-    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
-        type: 3}
-      propertyPath: m_Name
-      value: Smoke
-      objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805578, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5108,6 +5080,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.27538484
+      objectReference: {fileID: 0}
+    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
+        type: 3}
+      propertyPath: m_Name
+      value: Smoke
       objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805579, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
@@ -5135,11 +5112,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1185156712}
     m_Modifications:
-    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
-        type: 3}
-      propertyPath: m_Name
-      value: Smoke
-      objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805578, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5209,6 +5181,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.27538484
+      objectReference: {fileID: 0}
+    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
+        type: 3}
+      propertyPath: m_Name
+      value: Smoke
       objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805579, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
