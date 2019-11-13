@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CoinScript : MonoBehaviour
 {
+    public GameObject rootObj;
     private Rigidbody rb;
     private bool started;
     private float timer;
@@ -45,12 +46,12 @@ public class CoinScript : MonoBehaviour
         if (collider.gameObject.layer == LayerMask.NameToLayer("Salty"))
         {
             PauseMenu.coinsCollected++;
-            Destroy(gameObject);
+            Destroy(rootObj);
         }
         else if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
         {
             PauseMenu.coinsCollected++;
-            Destroy(gameObject);
+            Destroy(rootObj);
         }
     }
     

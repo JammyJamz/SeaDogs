@@ -6,6 +6,9 @@ TagManager:
   tags:
   - RustyCam
   - rustyRightHand
+  - saltyRightHand
+  - saltyLeftHand
+  - rustyLeftHand
   layers:
   - Default
   - TransparentFX

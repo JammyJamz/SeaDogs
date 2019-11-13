@@ -26,8 +26,9 @@ public class TargetPositionScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty") && this.gameObject.layer == LayerMask.NameToLayer("Enemy"))
         {
+            Debug.Log("setting true...");
             Salty_Rusty_Controller.targetInRange = true;
         }
     }

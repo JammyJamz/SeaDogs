@@ -44,8 +44,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public static Vector3 meleeTargetPosition;
     public static bool targetInRange;
     public static bool isSalty;
+    public static bool saltyLeftHandInTrigger;
+    public static bool saltyRightHandInTrigger;
 
-    private Animator saltyAnim, rustyAnim;
+    public static bool punchOneEnded;
+
+    public Animator rustyAnim;
+    public Animator saltyAnim;
+
+    public GameObject saltyThrowVFX;
+
+
     private Rigidbody saltyRig, rustyRig;
     private Transform saltyPos, rustyPos, currentCharacter;
     private float movX, movZ, mouseX, mouseY;
@@ -59,6 +68,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private bool punchKeyDown;
     private bool punchActivated;
+    private bool secondPunchActivated;
 
     private bool jumpActivated;
 
@@ -77,6 +87,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private Quaternion newRot2;
 
     public static bool inPunchAnimation;
+    public static bool inPunchAnimationTwo;
 
     //Whether we are currently interpolating or not
     private bool _isLerping;
@@ -91,6 +102,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
     //The Time.time value when we started the interpolation
     private float _timeStartedLerping;
     private float _saltyTimeStartedLerping;
+
+    private bool enteredLedgeGrab;
 
     void StartLerping()
     {
@@ -120,8 +133,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
         rustyRig = rusty.GetComponent<Rigidbody>();
         saltyRig = salty.GetComponent<Rigidbody>();
 
-        rustyAnim = rusty.GetComponent<Animator>();
-        saltyAnim = salty.GetComponent<Animator>();
+        //rustyAnim = rusty.GetComponent<Animator>();
+        //saltyAnim = salty.GetComponent<Animator>();
 
         rustyAgent.enabled = true;
         saltyAgent.enabled = false;
@@ -189,11 +202,20 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         punchKeyDown = false;
         punchActivated = false;
+        secondPunchActivated = false;
 
         meleeTargetPosition = Vector3.zero;
         targetInRange = false;
 
         inPunchAnimation = false;
+        inPunchAnimationTwo = false;
+
+        saltyLeftHandInTrigger = false;
+        saltyRightHandInTrigger = false;
+
+        enteredLedgeGrab = false;
+
+        punchOneEnded = false;
     }
 
 
@@ -201,6 +223,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
     {
         // reset vars
         climbKeyDown = false;
+
+        rustyAnim.SetBool("secondPunchActivated", false);
 
         // get movement input
         movZ = Input.GetAxisRaw("Vertical");
@@ -225,7 +249,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
 
         // switch key pressed
-        if (switchKeyDown && !isClimbing && !inRustyHands)
+        if (switchKeyDown && !isClimbing && !inRustyHands && !isBeingThrown)
         {
             // salty is not climbing so allowed to switch
 
@@ -316,22 +340,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             }
             else // is climbing when pressed, so need to drop off wall
             {
-                // update falling / climbing bools
-                isFalling = true;
-                isClimbing = false;
-                saltyAnim.SetBool("isFalling", true);
-                saltyAnim.SetBool("isClimbing", false);
-
-                // turn gravity back on and reset velocity (for safe measures)
-                saltyRig.useGravity = true;
-                saltyRig.velocity = Vector3.zero;
-
-                // turn collider back on and climb collider off
-                sCollider.gameObject.SetActive(true);
-                climbCollider.gameObject.SetActive(false);
-
-                // *** may be unneccessary now (not sure) *** update exit rotation to match Y euler of current camera Pivot rotation
-                //exitRotationTarget = Quaternion.Euler(new Vector3(nonClimbingRot.x, cameraPivot.localRotation.eulerAngles.y, nonClimbingRot.z));
+                UpdateSaltyAfterClimb();
             }
         }
         else if (throwKeyDown && !isSalty && !inRustyHands && inThrowTrigger)
@@ -361,11 +370,31 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !isFalling)
         {
-            punchActivated = true;
-            rustyAnim.SetBool("punchActivated", true);
-            rustyRig.velocity = Vector3.zero;
+            if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
+            {
+                secondPunchActivated = true;
+                //rustyAnim.SetBool("secondPunchActivated", true);
+            }
+            else
+            {
+                punchActivated = true;
+                rustyAnim.SetBool("punchActivated", true);
+                rustyRig.velocity = Vector3.zero;
+            }
         }
-        
+
+        if(secondPunchActivated && punchOneEnded)
+        {
+            
+            rustyAnim.SetBool("secondPunchActivated", true);
+            secondPunchActivated = false;
+        }
+
+        if(punchOneEnded)
+        {
+            punchOneEnded = false;
+        }
+
         /*if(!punchKeyDown && punchActivated)
         {
             punchActivated = false;
@@ -454,7 +483,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
 
             // check to see if moving
-            if ((velocity != Vector3.zero && !inPunchAnimation) || (targetInRange && inPunchAnimation))
+            if ((velocity != Vector3.zero && !inPunchAnimation && !inPunchAnimationTwo) || (targetInRange && (inPunchAnimation || inPunchAnimationTwo)))
             {
                 // get new rotation based of movement vectors
 
@@ -564,6 +593,16 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // lerp salty's model rotation to rusty's rotation
             saltyModelTrans.rotation = Quaternion.Lerp(saltyModelTrans.rotation, rustyModelTans.rotation, 5f * Time.deltaTime);
         }
+        else if (isSalty && isClimbing)
+        {
+            if(velocity == Vector3.zero)
+            {
+                // update climb movement anim bools
+                saltyAnim.SetBool("isIdleWall", true);
+                saltyAnim.SetBool("isFalling", false);
+            }
+            
+        }
 
     }
 
@@ -587,7 +626,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyRig.interpolation = RigidbodyInterpolation.None;
         }
 
-        if (!isClimbing && !inRustyHands && !throwActivated)
+        if (!isClimbing && !inRustyHands && !throwActivated || (jumpActivated && enteredLedgeGrab))
         {
             // update current character position and rotation
             currentCharacter.position = camPivotPlaceHolder.position;
@@ -619,11 +658,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (isBeingThrown && !isFalling)
             {
                 isBeingThrown = false;
+                saltyThrowVFX.SetActive(false);
             }
 
             int playerMask = LayerMask.GetMask("Salty") | LayerMask.GetMask("Rusty");
 
-            if (isSalty && !Physics.Raycast(salty.transform.position + Vector3.up*0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
+            if (isSalty && !isClimbing && !Physics.Raycast(salty.transform.position + Vector3.up*0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
             {
                 velocity *= fallingSpeed;
 
@@ -651,9 +691,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 rustyAnim.SetBool("isFalling", false);
                 isFalling = false;
             }
-
-            if(jumpActivated && isSalty && !isFalling)
+            
+            if(jumpActivated && isSalty && !isFalling && (!isClimbing || enteredLedgeGrab))
             {
+                if(enteredLedgeGrab)
+                {
+                    UpdateSaltyAfterClimb();
+                }
+                
                 saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
             }
@@ -694,6 +739,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             else if(isBeingThrown)
             {
                 saltyRig.velocity = saltyRig.velocity;
+                saltyThrowVFX.SetActive(true);
             }
             else if (!isSalty)
             {
@@ -717,7 +763,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     inPunchAnimation = false;
                 }
 
-                if (!inPunchAnimation && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
+                if (Animator.StringToHash("punch_2") == rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash)
+                {
+                    //Debug.Log("Yoooooo");
+                    inPunchAnimationTwo = true;
+                }
+                else
+                {
+                    inPunchAnimationTwo = false;
+                }
+
+                if (!inPunchAnimation && !inPunchAnimationTwo && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
                 {
                     // ladder in front so climb
                     rustyIsClimbing = true;
@@ -729,12 +785,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     
                     rustyRig.useGravity = false;
 
-                    rustyRig.velocity = Vector3.up * climbingSpeed;
+                    rustyRig.velocity = Vector3.up * rustyAnim.GetCurrentAnimatorStateInfo(0).speed/2f;
                     // update anim bools
                     rustyAnim.SetBool("isPushing", false);
                     rustyAnim.SetBool("isClimbing", true);
                 }
-                else if (!inPunchAnimation && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, out blockHit, 1.2f, LayerMask.GetMask("PushableBlocks")))
+                else if (!inPunchAnimation && !inPunchAnimationTwo && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, out blockHit, 1.2f, LayerMask.GetMask("PushableBlocks")))
                 {
                     // pushable block in front so push block
 
@@ -756,7 +812,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     Rigidbody blockRig = blockHit.transform.gameObject.GetComponent<Rigidbody>();
                     blockRig.velocity = new Vector3(velocity.x, blockRig.velocity.y, velocity.z);              
                 }
-                else if(inPunchAnimation)
+                else if(inPunchAnimation || inPunchAnimationTwo)
                 {
                     if(punchActivated)
                     {
@@ -768,7 +824,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                     if(targetInRange)
                     {
-                        Debug.Log("hryy");
                         //velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
                         rustyRig.AddForce((meleeTargetPosition - rusty.transform.position).normalized*25f, ForceMode.Force);
                     }
@@ -796,22 +851,31 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // rusty movement code
-                if ((movZ != 0 || movX != 0) && !inPunchAnimation)
+                if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo)
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);
                     rustyRig.velocity = actualVelocity;
                 }
-                else if (movZ == 0 && movX == 0 && !inPunchAnimation)
+                else if (movZ == 0 && movX == 0 && !inPunchAnimation && !inPunchAnimationTwo)
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(0f, rustyRig.velocity.y, 0f);
                     rustyRig.velocity = actualVelocity;
                 }
             }
+            enteredLedgeGrab = false;
         }
         else if (isSalty && isClimbing) // isClimbing
         {
+            if (saltyLeftHandInTrigger || saltyRightHandInTrigger)
+            {
+                enteredLedgeGrab = true;
+            }
+
+            
+
+
             // update rusty anim velocity
             rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
 
@@ -831,6 +895,15 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             // set velocity vector
             velocity = (movVertical + movHorizontal).normalized * climbingSpeed;
+
+            if (enteredLedgeGrab)
+            {
+                velocity = new Vector3(velocity.x, 0f, velocity.z);
+            }
+            else
+            {
+
+            }
 
             if (velocity != Vector3.zero) // is moving on wall
             {
@@ -896,6 +969,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
         else if (throwActivated)
         {
+            enteredLedgeGrab = false;
             // turn isKinematic off for salty and gravity back on
             saltyRig.isKinematic = false;
             saltyRig.useGravity = true;
@@ -932,11 +1006,37 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
         movX = 0f;
         movZ = 0f;
+        jumpActivated = false;
     }
 
     private IEnumerator ColliderDelay(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
         sCollider.gameObject.SetActive(true);
+    }
+
+    private void UpdateSaltyAfterClimb()
+    {
+        // update falling / climbing bools
+        isFalling = true;
+        isClimbing = false;
+        saltyAnim.SetBool("isFalling", true);
+        saltyAnim.SetBool("isClimbing", false);
+
+        // turn gravity back on and reset velocity (for safe measures)
+        saltyRig.useGravity = true;
+        saltyRig.velocity = Vector3.zero;
+
+        // turn collider back on and climb collider off
+        sCollider.gameObject.SetActive(true);
+        climbCollider.gameObject.SetActive(false);
+
+        // *** may be unneccessary now (not sure) *** update exit rotation to match Y euler of current camera Pivot rotation
+        //exitRotationTarget = Quaternion.Euler(new Vector3(nonClimbingRot.x, cameraPivot.localRotation.eulerAngles.y, nonClimbingRot.z));
+    }
+
+    public void PunchOneEnded()
+    {
+        Debug.Log("hehehe");
     }
 }
