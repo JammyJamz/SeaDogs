@@ -2155,6 +2155,7 @@ GameObject:
   - component: {fileID: 4584870834799052170}
   - component: {fileID: 7815365519734553507}
   - component: {fileID: 342806311807641099}
+  - component: {fileID: 5696687139386914661}
   m_Layer: 0
   m_Name: OrganicTree:OrganicTree:pCylinder13
   m_TagString: Untagged
@@ -2221,6 +2222,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &5696687139386914661
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6397699298567212158}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_Mesh: {fileID: -7183171295979825030, guid: f4b6e0cbf41cc4df5a16b16be8f6a59c, type: 3}
 --- !u!1 &6604625432414431601
 GameObject:
   m_ObjectHideFlags: 0
