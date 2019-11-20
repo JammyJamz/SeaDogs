@@ -8,7 +8,10 @@ public class TurrentTracking : MonoBehaviour
     public float fieldOfView;
     float distance;
 
-    private GameObject playerTarget;
+    //private GameObject playerTarget;
+    public Transform saltyPos;
+    public Transform rustyPos;
+
     private Transform target;
 
     Vector3 lastKnownPosition = Vector3.zero;
@@ -18,14 +21,20 @@ public class TurrentTracking : MonoBehaviour
 
     private void Awake()
     {
-        playerTarget = GameObject.FindGameObjectsWithTag("Player")[0];
-        target = playerTarget.transform;
+        //playerTarget = GameObject.FindGameObjectsWithTag("Player")[0];
+      // target = playerTarget.transform;
     }
 
 
     // Update is called once per frame
     void Update()
     {
+
+        if (Salty_Rusty_Controller.isSalty)
+            target = saltyPos;
+
+        else
+            target = rustyPos;
 
         distance = Vector3.Distance(target.position, transform.position);
 
