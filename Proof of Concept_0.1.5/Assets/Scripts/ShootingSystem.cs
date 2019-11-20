@@ -9,8 +9,11 @@ public class ShootingSystem : MonoBehaviour
     public bool beam;
 
     public GameObject projectile;
-    private GameObject target;
-    private Transform targetTransform;
+    private Transform target;
+    //private Transform targetTransform;
+
+    public Transform saltyPos;
+    public Transform rustyPos;
 
     public List<GameObject> projectileSpawns;
 
@@ -26,9 +29,15 @@ public class ShootingSystem : MonoBehaviour
 
     private void Start()
     {
-        target = GameObject.FindGameObjectsWithTag("Player")[0];
+        // target = GameObject.FindGameObjectsWithTag("Player")[0];
+        if (Salty_Rusty_Controller.isSalty)
+            target = saltyPos;
+
+        else
+            target = rustyPos;
+
         Debug.Log(target.name);
-        targetTransform = target.transform;
+       // targetTransform = target.transform;
     }
 
     // Update is called once per frame
@@ -38,7 +47,7 @@ public class ShootingSystem : MonoBehaviour
         {
             //float angle = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(transform.position - target.transform.position));
             // ^ Value never used
-            float distance = Vector3.Distance(targetTransform.position, transform.position);
+            float distance = Vector3.Distance(target.position, transform.position);
 
             if (distance < fieldOfView)
                 SpawnProjectiles();
@@ -48,7 +57,7 @@ public class ShootingSystem : MonoBehaviour
         {
             //float angle = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.transform.position - transform.position));
             // ^ Value never used
-            float distance = Vector3.Distance(targetTransform.position, transform.position);
+            float distance = Vector3.Distance(target.position, transform.position);
 
             if (distance > fieldOfView)
             {
@@ -69,7 +78,7 @@ public class ShootingSystem : MonoBehaviour
             {
                 //float angle = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(target.transform.position - transform.position));
                 // ^ Value never used
-                float distance = Vector3.Distance(targetTransform.position, transform.position);
+                float distance = Vector3.Distance(target.position, transform.position);
 
                 if (distance < fieldOfView)
                 {
