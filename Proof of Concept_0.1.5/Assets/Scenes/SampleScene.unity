@@ -1426,16 +1426,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2664681407764364900, guid: e6f17e30f61ad2d49bb01480646b2706,
-        type: 3}
-      propertyPath: endThrowPoint
-      value: 
-      objectReference: {fileID: 1550921534}
     - target: {fileID: 5629744745815517947, guid: e6f17e30f61ad2d49bb01480646b2706,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2664681407764364900, guid: e6f17e30f61ad2d49bb01480646b2706,
+        type: 3}
+      propertyPath: endThrowPoint
+      value: 
+      objectReference: {fileID: 1550921534}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6f17e30f61ad2d49bb01480646b2706, type: 3}
 --- !u!1 &621311980
@@ -4356,11 +4356,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 122724113}
     m_Modifications:
-    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
-        type: 3}
-      propertyPath: m_Name
-      value: Smoke
-      objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805578, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4430,6 +4425,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.27538484
+      objectReference: {fileID: 0}
+    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
+        type: 3}
+      propertyPath: m_Name
+      value: Smoke
       objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805579, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
@@ -4445,11 +4445,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1185156712}
     m_Modifications:
-    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
-        type: 3}
-      propertyPath: m_Name
-      value: Smoke
-      objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805578, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4519,6 +4514,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.27538484
+      objectReference: {fileID: 0}
+    - target: {fileID: 8444388882720805577, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
+        type: 3}
+      propertyPath: m_Name
+      value: Smoke
       objectReference: {fileID: 0}
     - target: {fileID: 8444388882720805579, guid: 6d736f7b720e0e74d9e9bb01b7c222b0,
         type: 3}
