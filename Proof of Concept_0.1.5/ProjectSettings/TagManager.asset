@@ -9,6 +9,8 @@ TagManager:
   - saltyRightHand
   - saltyLeftHand
   - rustyLeftHand
+  - Bullet
+  - rustyCollider
   layers:
   - Default
   - TransparentFX
@@ -26,7 +28,7 @@ TagManager:
   - Rusty
   - 
   - Enemy
-  - 
+  - Floor
   - 
   - 
   - 

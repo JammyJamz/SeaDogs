@@ -697,7 +697,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 820119169}
         m_MethodName: QuitGame
         m_Mode: 1
         m_Arguments:
@@ -1607,6 +1607,7 @@ GameObject:
   - component: {fileID: 820119166}
   - component: {fileID: 820119168}
   - component: {fileID: 820119167}
+  - component: {fileID: 820119169}
   m_Layer: 5
   m_Name: Main Menu
   m_TagString: Untagged
@@ -1674,6 +1675,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 820119165}
   m_CullTransparentMesh: 0
+--- !u!114 &820119169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820119165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9bc743fbf9e8324d98507b1a29e1b90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MainMenuBehavior: {fileID: 820119165}
+  OptionsObject: {fileID: 115577144}
+  Main_Menu: {fileID: 820119165}
+  VolumeObject: {fileID: 0}
+  ControlsObject: {fileID: 0}
+  GraphicsObject: {fileID: 0}
 --- !u!1 &837040143
 GameObject:
   m_ObjectHideFlags: 0
@@ -3837,7 +3856,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 820119169}
         m_MethodName: Play
         m_Mode: 1
         m_Arguments:

@@ -11,6 +11,8 @@ public class PauseMenu : MonoBehaviour
     public static bool gameWon = false;
     public static int coinsCollected;
 
+    public GameObject crosshair;
+
     public Text coinText;
 
     [SerializeField] GameObject PauseMenuBehavior;
@@ -60,6 +62,17 @@ public class PauseMenu : MonoBehaviour
             Time.timeScale = 0f;
 
         }
+
+        if(Salty_Rusty_Controller.isAiming)
+        {
+            crosshair.SetActive(true);
+        }
+        else
+        {
+            crosshair.SetActive(false);
+        }
+
+
     }
     public void Resume()
     {
@@ -81,6 +94,7 @@ public class PauseMenu : MonoBehaviour
     }
     void Pause()
     {
+        crosshair.SetActive(false);
         Cursor.visible = true;
         PauseMenuBehavior.SetActive(true);
         Time.timeScale = 0f;

@@ -13,6 +13,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public float turnThresh = 0.5f;
     public float fallingSpeed = 1.5f;
     public float pushSpeed = 0.3f;
+    public float aimWalkSpeed = 3f;
 
     public float meleeSnapSpeed = 4f;
 
@@ -35,11 +36,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     public GameObject saltyRing;
     public GameObject rustyRing;
+    public GameObject blunderbuss;
 
     public Transform endThrowPoint;
 
     public Transform rustyRightHand;
     public Transform rustyLeftHand;
+
+    public Transform camAimPos;
 
     public static Vector3 meleeTargetPosition;
     public static bool targetInRange;
@@ -89,21 +93,38 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public static bool inPunchAnimation;
     public static bool inPunchAnimationTwo;
 
+    public static bool isAiming;
+
     //Whether we are currently interpolating or not
     private bool _isLerping;
+    private bool _isLerpingAim;
     private bool _saltyIsLerping;
 
     //The start and finish positions for the interpolation
     private Vector3 _startPosition;
+    private Vector3 _startPositionAim;
     private Vector3 _endPosition;
+    private Vector3 _endPositionAim;
     private Vector3 _saltyStartPos;
     private Vector3 _saltyEndPos;
 
     //The Time.time value when we started the interpolation
     private float _timeStartedLerping;
+    private float _timeStartedLerpingAim;
     private float _saltyTimeStartedLerping;
 
     private bool enteredLedgeGrab;
+
+    private float camOffset = -4.019f;
+    private float camOffsetAim = -1.5f;
+
+    private Vector3 camStartLocalPos;
+
+    private Camera cam;
+
+    private CameraScript camScript;
+
+    private float offset;
 
     void StartLerping()
     {
@@ -113,6 +134,16 @@ public class Salty_Rusty_Controller : MonoBehaviour
         //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
         _startPosition = camPivotPlaceHolder.localPosition;
         _endPosition = rustyPivotPos.localPosition;
+    }
+
+    void StartLerpingCamAim(Vector3 startPos, Vector3 endPos)
+    {
+        _isLerpingAim = true;
+        _timeStartedLerpingAim = Time.time;
+
+        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
+        _startPositionAim = startPos;
+        _endPositionAim = endPos;
     }
 
     void StartLerpingSalty(Vector3 startPos, Vector3 endPos)
@@ -127,6 +158,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Start()
     {
+        cam = Camera.main;
+        camScript = GetComponent<CameraScript>();
+
         Application.targetFrameRate = 300;
         // initialization of variables
         currentCharacter = (new GameObject()).transform;
@@ -148,7 +182,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
         isClimbing = false;
         climbKeyDown = false;
         up = new Vector3(0, 1, 0);
-        camPivotPlaceHolder.position = pivotPos.position;
         climbStarted = false;
         isFalling = false;
         saltyPos = salty.transform;
@@ -166,7 +199,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         // update parent of cam pivot placeholder
         camPivotPlaceHolder.SetParent(salty.transform);
-        camPivotPlaceHolder.position = saltyPivotPos.position;
+  
         // update Nav Agents
         rustyAgent.enabled = true;
         saltyAgent.enabled = false;
@@ -188,6 +221,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         rustyIsClimbing = false;
         pushCollider.gameObject.SetActive(false);
         _isLerping = false;
+        _isLerpingAim = false;
         _saltyIsLerping = false;
 
         newRot = saltyModelTrans.rotation;
@@ -216,6 +250,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
         enteredLedgeGrab = false;
 
         punchOneEnded = false;
+
+        isAiming = false;
+
+        camStartLocalPos = cam.transform.localPosition;
+
+        blunderbuss.SetActive(false);
     }
 
 
@@ -243,13 +283,70 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         mouseY += Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSens;
 
-        if(jumpKeyDown)
+        if(jumpKeyDown && !isAiming)
         {
             jumpActivated = true;
         }
 
+        if(Input.GetMouseButtonDown(1) && isSalty && !isFalling)
+        {
+            isAiming = true;
+            StartLerpingCamAim(cam.transform.localPosition, camAimPos.localPosition);
+            //cam.transform.localPosition = camAimPos.localPosition;
+            //camScript.maxCamOffset = -1.5f;
+            //camScript.camOffset = -1.5f;
+
+            offset = -1.5f;
+            saltyAnim.SetBool("isAiming", true);
+
+            Quaternion tempRot = saltyModelTrans.rotation;
+            salty.transform.rotation = tempRot;
+            saltyModelTrans.rotation = tempRot;
+            blunderbuss.SetActive(true);
+        }
+        else if(Input.GetMouseButtonUp(1))
+        {
+            isAiming = false;
+            StartLerpingCamAim(camAimPos.localPosition, camStartLocalPos);
+            //cam.transform.localPosition = camStartLocalPos;
+            //camScript.maxCamOffset = camOffset;
+            //camScript.camOffset = camOffset;
+
+            
+            saltyAnim.SetBool("isAiming", false);
+            blunderbuss.SetActive(false);
+        }
+
+        // move camera from character to other character
+        if (_isLerpingAim)
+        {
+            float timeSinceStarted = Time.time - _timeStartedLerpingAim;
+            float percentageComplete = timeSinceStarted / timeTakenDuringLerp;
+
+
+            cam.transform.localPosition = Vector3.Lerp(_startPositionAim, _endPositionAim, percentageComplete);
+
+            if(isAiming)
+            {
+                camScript.camOffset = Mathf.Lerp(camOffset, offset, percentageComplete);
+                camScript.maxCamOffset = Mathf.Lerp(camOffset, offset, percentageComplete);
+            }
+            else
+            {
+                camScript.camOffset = Mathf.Lerp(camOffsetAim, camOffset, percentageComplete);
+                camScript.maxCamOffset = Mathf.Lerp(camOffsetAim, camOffset, percentageComplete);
+            }
+            
+
+
+            if (cam.transform.localPosition == _endPositionAim)
+            {
+                _isLerpingAim = false;
+            }
+        }
+
         // switch key pressed
-        if (switchKeyDown && !isClimbing && !inRustyHands && !isBeingThrown && !inPunchAnimation && !inPunchAnimationTwo)
+        if (switchKeyDown && !isClimbing && !inRustyHands && !isBeingThrown && !inPunchAnimation && !inPunchAnimationTwo && !isAiming)
         {
             // salty is not climbing so allowed to switch
 
@@ -300,7 +397,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyRing.SetActive(false);
             rustyRing.SetActive(false);
         }
-        else if (climbKeyDown && isSalty) // climb key pressed
+        else if (climbKeyDown && isSalty && !isAiming) // climb key pressed
         {
             // isSalty so can start climb
 
@@ -513,7 +610,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 
 
                 // lerp rotation of current character to new rotation
-                if(isSalty)
+                if(isSalty && !isAiming)
                 {
                     saltyModelTrans.rotation = Quaternion.Slerp(saltyModelTrans.rotation, newRot, 7 * Time.deltaTime);
                 }
@@ -524,7 +621,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
             }
 
-            if (isSalty)
+            if (isSalty && !isAiming)
             {
                 // lerps salty model and collider rotation back to vertical rotation since not climbing
                 saltyModelTrans.rotation = Quaternion.Slerp(saltyModelTrans.rotation, Quaternion.Euler(0, saltyModelTrans.eulerAngles.y, 0), 7 * Time.deltaTime);
@@ -554,7 +651,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (isSalty)
             {
                 // update anim move vars
-                saltyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
+                if(!isAiming)
+                {
+                    saltyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
+                    saltyAnim.SetFloat("PosX", 0f);
+                }
+                else
+                {
+                    saltyAnim.SetFloat("PosX", movX);
+                    saltyAnim.SetFloat("PosZ", movZ);
+                }
+                
                 rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(rustyAgent.velocity.magnitude), 0f, 1f));
 
                 // AI model rotation
@@ -673,7 +780,16 @@ public class Salty_Rusty_Controller : MonoBehaviour
             }
             else if(isSalty)
             {
-                velocity *= runningSpeed;
+                if (isAiming)
+                {
+                    velocity *= aimWalkSpeed;
+                }
+                else
+                {
+                    velocity *= runningSpeed;
+                }
+                
+
                 isFalling = false;
                 saltyAnim.SetBool("isFalling", false);
             }
@@ -830,6 +946,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     else
                     {
                         velocity = Vector3.zero;
+                        rustyRig.velocity = Vector3.zero;
                     }
 
                     // update anim bools and turn gravity back on
@@ -1038,5 +1155,16 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public void PunchOneEnded()
     {
         Debug.Log("hehehe");
+    }
+
+    private void LateUpdate()
+    {
+        if (isAiming)
+        {
+            // rotate camera left / right
+             saltyModelTrans.rotation = Quaternion.Euler(saltyModelTrans.rotation.eulerAngles.x, cameraPivot.rotation.eulerAngles.y, saltyModelTrans.rotation.eulerAngles.z);
+        }
+
+        mouseX = 0;
     }
 }
