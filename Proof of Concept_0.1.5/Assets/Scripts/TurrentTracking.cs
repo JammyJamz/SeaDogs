@@ -13,6 +13,7 @@ public class TurrentTracking : MonoBehaviour
     public Transform rustyPos;
 
     private Transform target;
+    private Transform playerTarget;
 
     Vector3 lastKnownPosition = Vector3.zero;
     Quaternion lookRotation;
@@ -22,7 +23,7 @@ public class TurrentTracking : MonoBehaviour
     private void Awake()
     {
         //playerTarget = GameObject.FindGameObjectsWithTag("Player")[0];
-      // target = playerTarget.transform;
+        // target = playerTarget.transform;
     }
 
 
@@ -62,7 +63,7 @@ public class TurrentTracking : MonoBehaviour
             return false;
         }
 
-        playerTarget = target;
+        playerTarget = target.transform;
 
         return true;
     }

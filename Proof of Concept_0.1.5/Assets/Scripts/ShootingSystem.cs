@@ -24,7 +24,7 @@ public class ShootingSystem : MonoBehaviour
 
     private void Awake()
     {
-        
+
     }
 
     private void Start()
@@ -37,7 +37,7 @@ public class ShootingSystem : MonoBehaviour
             target = rustyPos;
 
         Debug.Log(target.name);
-       // targetTransform = target.transform;
+        // targetTransform = target.transform;
     }
 
     // Update is called once per frame
@@ -87,9 +87,9 @@ public class ShootingSystem : MonoBehaviour
                 }
             }
         }
-        
 
-        
+
+
 
     }
 
@@ -109,7 +109,7 @@ public class ShootingSystem : MonoBehaviour
             if (projectileSpawns[i])
             {
                 GameObject proj = Instantiate(projectile, projectileSpawns[i].transform.position, Quaternion.Euler(projectileSpawns[i].transform.forward));
-                proj.GetComponent<BaseProjectile>().FireProjectile(projectileSpawns[i], target);
+                proj.GetComponent<BaseProjectile>().FireProjectile(projectileSpawns[i], target.gameObject);
 
                 lastProjectiles.Add(proj);
             }

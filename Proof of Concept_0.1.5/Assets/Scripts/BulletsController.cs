@@ -41,6 +41,7 @@ public class BulletsController : MonoBehaviour
 
             if (Input.GetMouseButtonDown(0) && timer >= cooldown)
             {
+                BlunderbussScript.shot = true;
                 mouseDown = true;
                 Instantiate(bullet, transform.position, transform.rotation);
                 timer = 0f;
