@@ -12,12 +12,14 @@ public class EnemyController : MonoBehaviour
     public int destPoint = 0;
     public Transform target;
 
+    public Transform saltyPos;
+    public Transform rustyPos;
+
     NavMeshAgent agent;
 
     // Start is called before the first frame update
     void Start()
     {
-        target = GameObject.FindGameObjectWithTag("Player").transform;
         //target = PlayerManager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
         GotoNextPoint();
@@ -26,6 +28,12 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Salty_Rusty_Controller.isSalty)
+            target = saltyPos;
+
+        else
+            target = rustyPos;
+
         float distance = Vector3.Distance(target.position, transform.position);
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
