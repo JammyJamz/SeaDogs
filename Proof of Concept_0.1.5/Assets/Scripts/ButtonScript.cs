@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour
 {
+    public bool isLadderButton;
 
-    public Text buttonText;
+    private Text buttonText;
 
     public GameObject ladder;
 
@@ -24,13 +25,15 @@ public class ButtonScript : MonoBehaviour
         inTrigger = false;
         buttonKeyDown = false;
         ladderDropped = false;
-    }
 
-    void Awake()
-    {
-        inTrigger = false;
-        buttonKeyDown = false;
-        ladderDropped = false;
+        if(isLadderButton)
+        {
+            buttonText = CanvasData.ladderDropText.GetComponent<Text>();
+        }
+        else
+        {
+            buttonText = CanvasData.platformSpawnText.GetComponent<Text>();
+        }
     }
 
     // Update is called once per frame

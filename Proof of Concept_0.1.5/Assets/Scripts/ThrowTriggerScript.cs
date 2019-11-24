@@ -6,15 +6,16 @@ using UnityEngine.UI;
 public class ThrowTriggerScript : MonoBehaviour
 {
 
-    public Text throwText;
+    private Text throwText;
+
+    public float forceMagnitude;
+
+    public Transform landingPosition;
+
     // Start is called before the first frame update
     void Start()
     {
-        throwText.gameObject.SetActive(false);
-    }
-
-    private void Awake()
-    {
+        throwText = CanvasData.throwText.GetComponent<Text>();
         throwText.gameObject.SetActive(false);
     }
 
@@ -26,12 +27,14 @@ public class ThrowTriggerScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.layer == LayerMask.NameToLayer("Salty"))
+        Salty_Rusty_Controller.throwForceMagnitude = forceMagnitude;
+        Salty_Rusty_Controller.endThrowPoint = landingPosition;
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Salty") && collider.gameObject.tag == "saltyCollider")
         {
             Salty_Rusty_Controller.inThrowTrigger = true;
             throwText.gameObject.SetActive(true);
         }
-        else if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
+        else if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty") && collider.gameObject.tag == "rustyCollider")
         {
             Salty_Rusty_Controller.inThrowTrigger = true;
             throwText.gameObject.SetActive(true);
@@ -39,12 +42,12 @@ public class ThrowTriggerScript : MonoBehaviour
     }
     private void OnTriggerExit(Collider collider)
     {
-        if (collider.gameObject.layer == LayerMask.NameToLayer("Salty"))
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Salty") && collider.gameObject.tag == "saltyCollider")
         {
             Salty_Rusty_Controller.inThrowTrigger = false;
             throwText.gameObject.SetActive(false);
         }
-        else if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty"))
+        else if (collider.gameObject.layer == LayerMask.NameToLayer("Rusty") && collider.gameObject.tag == "rustyCollider")
         {
             Salty_Rusty_Controller.inThrowTrigger = false;
             throwText.gameObject.SetActive(false);

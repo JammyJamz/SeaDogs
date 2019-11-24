@@ -6,11 +6,11 @@ public class PressurePlateScript : MonoBehaviour
 {
     public Transform pressedHeight;
 
+    public DoorScript door;
+
     private bool inTrigger;
 
     private Vector3 unpressedHeight;
-
-    public Animator doorAnimator;
 
     private bool _isLerping;
     private float _timeStartedLerping;
@@ -69,7 +69,7 @@ public class PressurePlateScript : MonoBehaviour
             {
                 if(inTrigger)
                 {
-                    doorAnimator.SetBool("doorOpened", true);
+                    door.OpenDoor();
                 }
                 _isLerping = false;
             }

@@ -15,10 +15,10 @@ public class IKControl : MonoBehaviour
     public Transform rightHandObj = null;
     public Transform lookObj = null;
 
-    public Transform [] leftPoints;
-    public Transform [] leftHandPoints;
-    public Transform [] rightPoints;
-    public Transform [] rightHandPoints;
+    public static Transform [] leftPoints;
+    public static Transform [] leftHandPoints;
+    public static Transform [] rightPoints;
+    public static Transform [] rightHandPoints;
 
 
     private bool startedAnimation;
@@ -54,7 +54,6 @@ public class IKControl : MonoBehaviour
         _isLerpingRF = true;
         _timeStartedLerpingRF = Time.time;
 
-        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
         _startPositionRightFoot = rightPoints[rightFootIndex - 1].position;
         _endPositionRightFoot = rightPoints[rightFootIndex].position;
     }
@@ -64,7 +63,6 @@ public class IKControl : MonoBehaviour
         _isLerpingLF = true;
         _timeStartedLerpingLF = Time.time;
 
-        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
         _startPositionLeftFoot = leftPoints[leftFootIndex - 1].position;
         _endPositionLeftFoot = leftPoints[leftFootIndex].position;
     }
@@ -74,7 +72,6 @@ public class IKControl : MonoBehaviour
         _isLerpingLH = true;
         _timeStartedLerpingLH = Time.time;
 
-        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
         _startPositionLeftHand = leftHandPoints[leftHandIndex - 1].position;
         _endPositionLeftHand = leftHandPoints[leftHandIndex].position;
     }
@@ -84,7 +81,6 @@ public class IKControl : MonoBehaviour
         _isLerpingRH = true;
         _timeStartedLerpingRH = Time.time;
 
-        //We set the start position to the current position, and the finish to 10 spaces in the 'forward' direction
         _startPositionRightHand = rightHandPoints[rightHandIndex - 1].position;
         _endPositionRightHand = rightHandPoints[rightHandIndex].position;
     }

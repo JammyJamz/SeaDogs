@@ -38,7 +38,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public GameObject rustyRing;
     public GameObject blunderbuss;
 
-    public Transform endThrowPoint;
 
     public Transform rustyRightHand;
     public Transform rustyLeftHand;
@@ -53,6 +52,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     public static bool punchOneEnded;
 
+    public static Transform globalSalty;
+    public static Transform globalRusty;
+
+    public static bool saltyOnPlatform;
+    public static bool rustyOnPlatform;
+
     public Animator rustyAnim;
     public Animator saltyAnim;
 
@@ -65,7 +70,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private Vector3 fixRotation, posToMove, velocity, nonClimbingRot, currentWallDir, up;
     private RaycastHit startHit, lastHit;
     private Quaternion exitRotationTarget;
-    private bool climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands, jumpKeyDown;
+    private bool climbStarted, isFalling, isLerping, switchKeyDown, isSwitching, isClimbing, climbKeyDown, throwKeyDown, inRustyHands, jumpKeyDown, saltyIsFalling, rustyIsFalling;
     private bool throwActivated;
     private bool isBeingThrown;
     private bool startSwitchVFX;
@@ -125,6 +130,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private CameraScript camScript;
 
     private float offset;
+
+    public static float throwForceMagnitude;
+    public static Transform endThrowPoint;
 
     void StartLerping()
     {
@@ -256,6 +264,15 @@ public class Salty_Rusty_Controller : MonoBehaviour
         camStartLocalPos = cam.transform.localPosition;
 
         blunderbuss.SetActive(false);
+
+        globalRusty = rusty.transform;
+        globalSalty = salty.transform;
+
+        saltyOnPlatform = false;
+        rustyOnPlatform = false;
+
+        saltyIsFalling = false;
+        rustyIsFalling = false;
     }
 
 
@@ -288,7 +305,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             jumpActivated = true;
         }
 
-        if(Input.GetMouseButtonDown(1) && isSalty && !isFalling)
+        if(Input.GetMouseButtonDown(1) && isSalty && !saltyIsFalling)
         {
             isAiming = true;
             StartLerpingCamAim(cam.transform.localPosition, camAimPos.localPosition);
@@ -360,12 +377,18 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 // update parent of cam pivot placeholder to rusty's model
                 camPivotPlaceHolder.SetParent(rusty.transform);
 
+
                 // update Nav Agents
-                saltyAgent.enabled = true;
+                if (!saltyOnPlatform && !saltyIsFalling)
+                {
+                    saltyAgent.enabled = true;
+                    sCollider.gameObject.SetActive(false);
+                }
+                
                 rustyAgent.enabled = false;
                 
                 // update colliders
-                sCollider.gameObject.SetActive(false);
+                
                 rCollider.gameObject.SetActive(true);
             }
             else
@@ -378,11 +401,16 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 camPivotPlaceHolder.SetParent(salty.transform);
 
                 // update Nav Agents
-                rustyAgent.enabled = true;
+                
+                if (!rustyOnPlatform && !rustyIsFalling)
+                {
+                    rustyAgent.enabled = true;
+                    rCollider.gameObject.SetActive(false);
+                }
+
                 saltyAgent.enabled = false;
 
                 // update colliders
-                rCollider.gameObject.SetActive(false);
                 sCollider.gameObject.SetActive(true);
             }
 
@@ -413,13 +441,13 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     saltyAnim.SetBool("isClimbing", true);
 
                     // check if in the air
-                    if (isFalling)
+                    if (saltyIsFalling)
                     {
                         // update falling bools
                         saltyAnim.SetTrigger("grabbedWallInAir");
 
                         // grabbed a wall so no longer falling
-                        isFalling = false;
+                        saltyIsFalling = false;
                         saltyAnim.SetBool("isFalling", false);
                     }
 
@@ -465,7 +493,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyAnim.SetBool("isReadyForThrow", false);
         }
 
-        if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !isFalling)
+        if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !rustyIsFalling)
         {
             if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
             {
@@ -637,12 +665,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     // update destinations of NavMesh Agents
                     if (isSalty)
                     {
-                        rustyAgent.destination = (saltyRig.position);
+                        if(rustyAgent.enabled)
+                            rustyAgent.SetDestination(saltyRig.position);
                     }
                     else
                     {
                         // update destination of salty AI
-                        saltyAgent.SetDestination(rustyRig.position);
+                        if(saltyAgent.enabled)
+                            saltyAgent.SetDestination(rustyRig.position);
                     }
                 }
                 aiTimer = 0f;
@@ -720,17 +750,55 @@ public class Salty_Rusty_Controller : MonoBehaviour
         
         if(isSalty)
         {
-            rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            saltyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             saltyRig.interpolation = RigidbodyInterpolation.Interpolate;
-            rustyRig.interpolation = RigidbodyInterpolation.None;
+
+            if ((rustyOnPlatform || rustyIsFalling) && !inRustyHands)
+            {
+                rustyRig.interpolation = RigidbodyInterpolation.Interpolate;
+                rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
+                if (rustyOnPlatform)
+                    rustyRig.velocity = new Vector3(0f, rustyRig.velocity.y, 0f);
+
+            }
+            else
+            {
+                rustyRig.interpolation = RigidbodyInterpolation.None;
+                rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            }
+
+            
+            if (!rustyIsFalling && !rustyOnPlatform)
+            {
+                rustyAgent.enabled = true;
+            }
         }
         else
         {
-            saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-            rustyRig.collisionDetectionMode = CollisionDetectionMode.Continuous;
+            
+            rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             rustyRig.interpolation = RigidbodyInterpolation.Interpolate;
-            saltyRig.interpolation = RigidbodyInterpolation.None;
+
+            if(saltyOnPlatform || saltyIsFalling)
+            {
+                saltyRig.interpolation = RigidbodyInterpolation.Interpolate;
+                saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+
+                if(saltyOnPlatform)
+                    saltyRig.velocity = new Vector3(0f, saltyRig.velocity.y, 0f);
+
+            }
+            else
+            {
+                saltyRig.interpolation = RigidbodyInterpolation.None;
+                saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            }
+
+            if (!saltyIsFalling && !saltyOnPlatform && !inRustyHands)
+            {
+                saltyAgent.enabled = true;
+            }
         }
 
         if (!isClimbing && !inRustyHands && !throwActivated || (jumpActivated && enteredLedgeGrab))
@@ -742,14 +810,32 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (isSalty)
             {
                 // update isKinematic on rigid bodies
-                rustyRig.isKinematic = true;
-                saltyRig.isKinematic = false;
+
+                if (!rustyOnPlatform && !rustyIsFalling)
+                {
+                    saltyRig.isKinematic = false;
+                    rustyRig.isKinematic = true;
+                }
+                else
+                {
+                    saltyRig.isKinematic = false;
+                    rustyRig.isKinematic = false;
+                }
             }
             else
             {
                 // update isKinematic on rigid bodies
-                rustyRig.isKinematic = false;
-                saltyRig.isKinematic = true;
+
+                if (!saltyOnPlatform && !saltyIsFalling)
+                {
+                    rustyRig.isKinematic = false;
+                    saltyRig.isKinematic = true;
+                }
+                else
+                {
+                    rustyRig.isKinematic = false;
+                    saltyRig.isKinematic = false;
+                }
             }
 
             // zero out X and Z rotation for movement vectors
@@ -762,7 +848,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             // set velocity vector direction
             velocity = (movVertical + movHorizontal).normalized;
 
-            if (isBeingThrown && !isFalling)
+            if (isBeingThrown && !saltyIsFalling)
             {
                 isBeingThrown = false;
                 saltyThrowVFX.SetActive(false);
@@ -770,45 +856,50 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             int playerMask = LayerMask.GetMask("Salty") | LayerMask.GetMask("Rusty");
 
-            if (isSalty && !isClimbing && !Physics.Raycast(salty.transform.position + Vector3.up*0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
+            if (!isClimbing && !Physics.Raycast(salty.transform.position + Vector3.up*0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
             {
-                velocity *= fallingSpeed;
+                if(isSalty)
+                    velocity *= fallingSpeed;
 
                 // update falling / throw bools
-                isFalling = true;
+                saltyIsFalling = true;
                 saltyAnim.SetBool("isFalling", true);
             }
-            else if(isSalty)
+            else
             {
-                if (isAiming)
+                if (isAiming && isSalty)
                 {
                     velocity *= aimWalkSpeed;
                 }
-                else
+                else if(isSalty)
                 {
                     velocity *= runningSpeed;
                 }
                 
 
-                isFalling = false;
+                saltyIsFalling = false;
                 saltyAnim.SetBool("isFalling", false);
             }
 
             // jump code
-            if (!isSalty && !rustyIsClimbing && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
+            if (!rustyIsClimbing && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f, Vector3.down, 0.4f, ~playerMask, QueryTriggerInteraction.Ignore))
             {
-                velocity *= fallingSpeed;
-                isFalling = true;
+                if(!isSalty)
+                    velocity *= fallingSpeed;
+
+                rustyIsFalling = true;
                 rustyAnim.SetBool("isFalling", true);
             }
-            else if (!isSalty)
+            else
             {
-                velocity *= runningSpeed;
+                if(!isSalty)
+                    velocity *= runningSpeed;
+
                 rustyAnim.SetBool("isFalling", false);
-                isFalling = false;
+                rustyIsFalling = false;
             }
             
-            if(jumpActivated && isSalty && !isFalling && (!isClimbing || enteredLedgeGrab))
+            if(jumpActivated && isSalty && !saltyIsFalling && (!isClimbing || enteredLedgeGrab))
             {
                 if(enteredLedgeGrab)
                 {
@@ -818,17 +909,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
             }
-            else if(jumpActivated && !isSalty && !isFalling && !rustyIsClimbing)
+            else if(jumpActivated && !isSalty && !rustyIsFalling && !rustyIsClimbing)
             {
                 rustyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
             }
 
-            if (isSalty && isFalling && saltyRig.velocity.y < 0f)
+            if (saltyIsFalling && saltyRig.velocity.y < 0f)
             {
                 saltyRig.AddForce(Vector3.down * 15, ForceMode.Force);
             }
-            else if (!isSalty && isFalling && rustyRig.velocity.y < 0f)
+            if (rustyIsFalling && rustyRig.velocity.y < 0f)
             {
                 rustyRig.AddForce(Vector3.down * 15, ForceMode.Force);
             }
@@ -891,20 +982,33 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                 if (!inPunchAnimation && !inPunchAnimationTwo && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, 0.8f, LayerMask.GetMask("Ladders")))
                 {
-                    // ladder in front so climb
-                    rustyIsClimbing = true;
+                    if (rustyIsFalling && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f, Vector3.down, 0.6f, ~playerMask, QueryTriggerInteraction.Ignore))
+                    {
 
-                    pushCollider.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        if(rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("ladder"))
+                        {
+                            rustyIsClimbing = true;
+                            rustyRig.useGravity = false;
 
-                    // set velocity to up direction and turn off gravity
-                    velocity = Vector3.up;
+                            rustyRig.velocity = Vector3.up * rustyAnim.GetCurrentAnimatorStateInfo(0).speed / 2f;
+                        }
+                        // ladder in front so climb
+                        
+
+                        pushCollider.gameObject.SetActive(false);
+
+                        // set velocity to up direction and turn off gravity
+                        velocity = Vector3.up;
+
+                        
+                        // update anim bools
+                        rustyAnim.SetBool("isPushing", false);
+                        rustyAnim.SetBool("isClimbing", true);
+                    }
                     
-                    rustyRig.useGravity = false;
-
-                    rustyRig.velocity = Vector3.up * rustyAnim.GetCurrentAnimatorStateInfo(0).speed/2f;
-                    // update anim bools
-                    rustyAnim.SetBool("isPushing", false);
-                    rustyAnim.SetBool("isClimbing", true);
                 }
                 else if (!inPunchAnimation && !inPunchAnimationTwo && velocity != Vector3.zero && Physics.Raycast(rusty.transform.position + Vector3.up * 0.1f + -rustyModelTans.forward * 0.1f, rustyModelTans.forward, out blockHit, 1.2f, LayerMask.GetMask("PushableBlocks")))
                 {
@@ -1093,8 +1197,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             Debug.DrawRay(salty.transform.position, (endThrowPoint.position - rusty.transform.position).normalized + Vector3.up, Color.cyan, 10f);
 
+            //callback
+
             // add a force towards the end position and upwards
-            saltyRig.AddForce(((endThrowPoint.position - rusty.transform.position).normalized + Vector3.up) * 11f, ForceMode.Impulse);
+            saltyRig.AddForce(((endThrowPoint.position - rusty.transform.position).normalized + Vector3.up) * throwForceMagnitude, ForceMode.Impulse);
 
             // turn collider back on and reset throwActivated
             
@@ -1117,7 +1223,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             // update bools
             isBeingThrown = true;
-            isFalling = true;
+            saltyIsFalling = true;
             saltyAnim.SetBool("isFalling", true);
             isSwitching = true;
         }
@@ -1135,7 +1241,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private void UpdateSaltyAfterClimb()
     {
         // update falling / climbing bools
-        isFalling = true;
+        saltyIsFalling = true;
         isClimbing = false;
         saltyAnim.SetBool("isFalling", true);
         saltyAnim.SetBool("isClimbing", false);
