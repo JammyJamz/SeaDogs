@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Jungle Whitebox.unity
+- path: Assets/Scenes/video_demo.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
