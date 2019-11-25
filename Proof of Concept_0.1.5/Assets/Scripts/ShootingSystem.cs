@@ -30,19 +30,21 @@ public class ShootingSystem : MonoBehaviour
     private void Start()
     {
         // target = GameObject.FindGameObjectsWithTag("Player")[0];
-        if (Salty_Rusty_Controller.isSalty)
-            target = saltyPos;
 
-        else
-            target = rustyPos;
-
-        Debug.Log(target.name);
         // targetTransform = target.transform;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Salty_Rusty_Controller.isSalty)
+            target = saltyPos;
+
+        else if (Salty_Rusty_Controller.isSalty == false)
+            target = rustyPos;
+
+        Debug.Log(target.name);
+
         if (beam && lastProjectiles.Count <= 0)
         {
             //float angle = Quaternion.Angle(transform.rotation, Quaternion.LookRotation(transform.position - target.transform.position));
