@@ -1255,11 +1255,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2664681407764364900, guid: e6f17e30f61ad2d49bb01480646b2706,
-        type: 3}
-      propertyPath: endThrowPoint
-      value: 
-      objectReference: {fileID: 1550921534}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6f17e30f61ad2d49bb01480646b2706, type: 3}
 --- !u!1 &621311980
@@ -4750,6 +4745,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Ladder
+      objectReference: {fileID: 0}
+    - target: {fileID: 1748575118038521233, guid: c78b85f919753f943a8b29feaca0cde3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1748575118038521245, guid: c78b85f919753f943a8b29feaca0cde3,
         type: 3}

@@ -7,6 +7,8 @@ public class BulletsController : MonoBehaviour
 
     public GameObject bullet;
 
+    public Animator saltyAnim;
+
     private bool mouseDown;
 
     private float cooldown;
@@ -16,7 +18,7 @@ public class BulletsController : MonoBehaviour
     private bool startedAiming;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         mouseDown = false;
 
@@ -29,12 +31,12 @@ public class BulletsController : MonoBehaviour
     void Update()
     {
         
-        if(Salty_Rusty_Controller.isAiming)
+        if(Salty_Rusty_Controller.isAiming && (saltyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("aiming") || saltyAnim.GetAnimatorTransitionInfo(0).userNameHash == Animator.StringToHash("aiming")))
         {
             if (!startedAiming)
             {
                 startedAiming = true;
-                timer = cooldown;
+                timer = cooldown*2;
             }
 
             timer += Time.deltaTime;

@@ -300,9 +300,13 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         mouseY += Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSens;
 
-        if(jumpKeyDown && !isAiming)
+        if (jumpKeyDown && !isAiming)
         {
-            jumpActivated = true;
+            if(isSalty && saltyAnim.GetCurrentAnimatorStateInfo(0).tagHash != Animator.StringToHash("falling"))
+                jumpActivated = true;
+
+            if (!isSalty)
+                jumpActivated = true;
         }
 
         if(Input.GetMouseButtonDown(1) && isSalty && !saltyIsFalling)
@@ -331,6 +335,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
             
             saltyAnim.SetBool("isAiming", false);
+            blunderbuss.gameObject.GetComponent<BlunderbussScript>().BlunderVFX.gameObject.SetActive(false);
             blunderbuss.SetActive(false);
         }
 
@@ -477,7 +482,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
             sCollider.gameObject.SetActive(false);
             saltyAnim.SetBool("isReadyForThrow", true);
 
-            StartLerpingSalty(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward * 0.25f));
+            Debug.DrawRay(Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f), Vector3.up, Color.red, 20f);
+            StartLerpingSalty(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward * 0.25f) - Vector3.up*0.5f);
 
             // don't want salty moving on navmesh when in rusty's hands
             saltyAgent.enabled = false;
@@ -747,8 +753,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
     {
         Vector3 movHorizontal;
         Vector3 movVertical;
-        
-        if(isSalty)
+
+        saltyAnim.SetBool("jumpActivated", false);
+
+        if (isSalty)
         {
             saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             saltyRig.interpolation = RigidbodyInterpolation.Interpolate;
@@ -907,6 +915,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
                 
                 saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
+                saltyAnim.SetBool("jumpActivated", true);
                 jumpActivated = false;
             }
             else if(jumpActivated && !isSalty && !rustyIsFalling && !rustyIsClimbing)

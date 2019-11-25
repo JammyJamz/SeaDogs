@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Waterfall
+  m_Shader: {fileID: 4800000, guid: f24809d953f26f64b9c352c89807da80, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SurfaceDistortion:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SurfaceNoise:
+        m_Texture: {fileID: 2800000, guid: 25463dc96ee61e74f94d6b4fd0b1fba8, type: 3}
+        m_Scale: {x: 3.55, y: 3.55}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DepthMaxDistance: -1
+    - _FoamMaxDistance: 0.4
+    - _FoamMinDistance: 0.04
+    - _SurfaceDistortionAmount: 1
+    - _SurfaceNoiseCutoff: 0.274
+    m_Colors:
+    - _DepthGradientDeep: {r: 0, g: 0, b: 0, a: 0.749}
+    - _DepthGradientShallow: {r: 0, g: 0.7042521, b: 0.8773585, a: 0.725}
+    - _FoamColor: {r: 0.38823533, g: 0.8980393, b: 0.9725491, a: 1}
+    - _SurfaceNoiseScroll: {r: 0, g: 1.2, b: 500, a: 0}

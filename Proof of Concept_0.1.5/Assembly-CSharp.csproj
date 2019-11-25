@@ -85,6 +85,7 @@
     <Compile Include="Assets\Scripts\LocalCanvasData.cs" />
     <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\MeleeDetection.cs" />
+    <Compile Include="Assets\Scripts\MeleeVFXController.cs" />
     <Compile Include="Assets\Scripts\MovingPlatformScript.cs" />
     <Compile Include="Assets\Scripts\NormalProjectile.cs" />
     <Compile Include="Assets\Scripts\OptionsMenu.cs" />
@@ -102,7 +103,9 @@
     <Compile Include="Assets\Scripts\TurrentTracking.cs" />
     <Compile Include="Assets\Scripts\WallCanvasUpdate.cs" />
     <Compile Include="Assets\Scripts\WinScript.cs" />
+    <Compile Include="Assets\Water_VFX\Scripts\Floating_Script.cs" />
     <None Include="Assets\NavMeshComponents-2019.1\ProjectSettings\ProjectVersion.txt" />
+    <None Include="Assets\Water_VFX\Shaders\Water_Shader.shader" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/natha/Documents/GitHub/SeaDogs/Proof of Concept_0.1.5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

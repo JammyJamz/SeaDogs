@@ -28,7 +28,7 @@ public class TargetPositionScript : MonoBehaviour
     {
         if (collider.gameObject.tag == "rustyCollider")
         {
-            Debug.Log("setting true...");
+            //Debug.Log("setting true...");
             Salty_Rusty_Controller.targetInRange = true;
         }
     }
@@ -37,7 +37,7 @@ public class TargetPositionScript : MonoBehaviour
     {
         if (collider.gameObject.tag == "rustyCollider")
         {
-            Debug.Log("setting false...");
+            //Debug.Log("setting false...");
             Salty_Rusty_Controller.targetInRange = false;
             Salty_Rusty_Controller.meleeTargetPosition = Vector3.zero;
         }
