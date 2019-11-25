@@ -7,8 +7,8 @@ public class TrackingProjectile : BaseProjectile
 
   void Update()
   {
-    if (newtarget)
-      transform.position = Vector3.MoveTowards(transform.position, newtarget.transform.position, speed * Time.deltaTime)
+        if (newtarget)
+            transform.position = Vector3.MoveTowards(transform.position, newtarget.transform.position, speed * Time.deltaTime);
   }
 
   public override void FireProjectile(GameObject projectile, GameObject target)

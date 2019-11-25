@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\BaseProjectile.cs" />
+    <Compile Include="Assets\Scripts\BeamProjectile.cs" />
     <Compile Include="Assets\Scripts\BlunderbussScript.cs" />
     <Compile Include="Assets\Scripts\BreakableBoxScript.cs" />
     <Compile Include="Assets\Scripts\BulletDespawnScript.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Assets\Scripts\SparklesScript.cs" />
     <Compile Include="Assets\Scripts\TargetPositionScript.cs" />
     <Compile Include="Assets\Scripts\ThrowTriggerScript.cs" />
+    <Compile Include="Assets\Scripts\TrackingProjectile.cs" />
     <Compile Include="Assets\Scripts\TurrentTracking.cs" />
     <Compile Include="Assets\Scripts\WallCanvasUpdate.cs" />
     <Compile Include="Assets\Scripts\WinScript.cs" />
