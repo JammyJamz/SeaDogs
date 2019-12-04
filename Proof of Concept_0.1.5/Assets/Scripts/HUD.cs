@@ -19,12 +19,12 @@ public class HUD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T) && gameObject.GetComponent<Image>().sprite == saltyImg)
+        if (Input.GetKeyDown(KeyCode.E) && gameObject.GetComponent<Image>().sprite == saltyImg)
         {
             gameObject.GetComponent<Image>().sprite = rustyImg;
         }
 
-        else if (Input.GetKeyDown(KeyCode.T) && gameObject.GetComponent<Image>().sprite == rustyImg)
+        else if (Input.GetKeyDown(KeyCode.E) && gameObject.GetComponent<Image>().sprite == rustyImg)
         {
             gameObject.GetComponent<Image>().sprite = saltyImg;
         }
