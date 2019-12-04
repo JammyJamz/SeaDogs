@@ -70,14 +70,14 @@ public class SaltyIKControl : MonoBehaviour
             animator.SetIKRotation(AvatarIKGoal.RightHand, Quaternion.LookRotation(transform.forward + transform.up));
             animator.SetIKPosition(AvatarIKGoal.RightHand, Vector3.Lerp(animator.GetIKPosition(AvatarIKGoal.RightHand), tempPos2, 1f));
         }
-        else if(animator.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("aiming"))
+        else if(animator.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("aiming") || animator.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("pull_out"))
         {
             enteredLedgeGrab = false;
             animator.SetLookAtPosition(Camera.main.transform.position + Camera.main.transform.forward*10f);
-            Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + Camera.main.transform.forward * 10f, Color.red);
+            //Debug.DrawLine(Camera.main.transform.position, Camera.main.transform.position + Camera.main.transform.forward * 10f, Color.red);
             animator.SetLookAtWeight(1);
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, positionWeight);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, Vector3.Lerp(animator.GetIKPosition(AvatarIKGoal.LeftHand), saltyBlunderLeftHandPos.position, 1f));
+            //animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, positionWeight);
+            //animator.SetIKPosition(AvatarIKGoal.LeftHand, Vector3.Lerp(animator.GetIKPosition(AvatarIKGoal.LeftHand), saltyBlunderLeftHandPos.position, 1f));
         }
         else
         {

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MeleeDetection : MonoBehaviour
 {
+    public int hp = 150;
     public GameObject rootObj;
-    private int hp;
 
     private bool leftHandHit;
 
@@ -20,7 +20,6 @@ public class MeleeDetection : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        hp = 100;
 
         leftHandHit = false;
         inPunchAnimation = false;
