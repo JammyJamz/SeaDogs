@@ -281,7 +281,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         // reset vars
         climbKeyDown = false;
 
-        rustyAnim.SetBool("secondPunchActivated", false);
+        //rustyAnim.SetBool("secondPunchActivated", false);
 
         // get movement input
         movZ = Input.GetAxisRaw("Vertical");
@@ -325,7 +325,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyModelTrans.rotation = tempRot;
             blunderbuss.SetActive(true);
         }
-        else if(Input.GetMouseButtonUp(1))
+        else if(Input.GetMouseButtonUp(1) && isSalty)
         {
             isAiming = false;
             StartLerpingCamAim(camAimPos.localPosition, camStartLocalPos);
@@ -503,6 +503,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         {
             if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
             {
+                Debug.Log("heyy");
                 secondPunchActivated = true;
                 //rustyAnim.SetBool("secondPunchActivated", true);
             }
@@ -518,7 +519,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         {
             
             rustyAnim.SetBool("secondPunchActivated", true);
-            secondPunchActivated = false;
+            //secondPunchActivated = false;
         }
 
         if(punchOneEnded)
@@ -625,13 +626,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
                 else
                 {
-                    if (inPunchAnimation && targetInRange)
+                    if ((inPunchAnimation || inPunchAnimationTwo) && targetInRange)
                     {
                         
                         Debug.DrawRay(rusty.transform.position, (meleeTargetPosition - rusty.transform.position).normalized, Color.cyan);
 
 
                         newRot = Quaternion.LookRotation((meleeTargetPosition - rusty.transform.position).normalized, Vector3.up);
+                        newRot = Quaternion.Euler(0, newRot.eulerAngles.y, 0);
                     }
                     else 
                     {
@@ -877,7 +879,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             {
                 if (isAiming && isSalty)
                 {
-                    velocity *= aimWalkSpeed;
+                    velocity *= 0f;
                 }
                 else if(isSalty)
                 {
@@ -1048,20 +1050,34 @@ public class Salty_Rusty_Controller : MonoBehaviour
                         rustyRig.velocity = Vector3.zero;
                         punchActivated = false;
                         rustyAnim.SetBool("punchActivated", false);
+                        if (targetInRange)
+                        {
+                            //velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
+                            Vector3 dir = new Vector3(meleeTargetPosition.x - rusty.transform.position.x, 0, meleeTargetPosition.z - rusty.transform.position.z);
+                            rustyRig.AddForce(dir.normalized * 3f, ForceMode.Impulse);
+                        }
+                    }
+                    if(inPunchAnimationTwo && secondPunchActivated)
+                    {
+                        rustyRig.velocity = Vector3.zero;
+                        secondPunchActivated = false;
+                        rustyAnim.SetBool("secondPunchActivated", false);
+                        if (targetInRange)
+                        {
+                            //velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
+                            Vector3 dir = new Vector3(meleeTargetPosition.x - rusty.transform.position.x, 0, meleeTargetPosition.z - rusty.transform.position.z);
+                            rustyRig.AddForce(dir.normalized * 3f, ForceMode.Impulse);
+                        }
                     }
                     pushCollider.gameObject.SetActive(false);
 
-                    if(targetInRange)
-                    {
-                        //velocity = (meleeTargetPosition - rusty.transform.position).normalized * meleeSnapSpeed;
-                        rustyRig.AddForce((meleeTargetPosition - rusty.transform.position).normalized*25f, ForceMode.Force);
-                    }
-                    else
+                    if(!targetInRange)
                     {
                         velocity = Vector3.zero;
                         rustyRig.velocity = Vector3.zero;
                     }
-
+                    /*if (rustyRig.velocity.y > 0)
+                        rustyRig.velocity = new Vector3(rustyRig.velocity.x, 0, rustyRig.velocity.z);*/
                     // update anim bools and turn gravity back on
                     rustyAnim.SetBool("isPushing", false);
                     rustyRig.useGravity = true;
