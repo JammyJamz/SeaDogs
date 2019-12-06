@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BulletsController : MonoBehaviour
 {
+    private AudioSource saltyBlunderbuss;
 
     public GameObject bullet;
 
@@ -27,6 +28,11 @@ public class BulletsController : MonoBehaviour
         startedAiming = false;
     }
 
+    private void Start()
+    {
+        saltyBlunderbuss = GetComponent<AudioSource>();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -44,6 +50,7 @@ public class BulletsController : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && timer >= cooldown)
             {
                 BlunderbussScript.shot = true;
+                saltyBlunderbuss.Play();
                 mouseDown = true;
                 Instantiate(bullet, transform.position, transform.rotation);
                 timer = 0f;

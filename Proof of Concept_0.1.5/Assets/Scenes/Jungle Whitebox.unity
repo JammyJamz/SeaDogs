@@ -11850,11 +11850,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5629744745815517947, guid: e6f17e30f61ad2d49bb01480646b2706,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1406392602, guid: e6f17e30f61ad2d49bb01480646b2706, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class Salty_Rusty_Controller : MonoBehaviour
 {
+    private AudioSource rustyPunchSound;
+
     public static bool inThrowTrigger;
     public float runningSpeed = 15f;
     public float mouseSens = 15f;
@@ -166,6 +168,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Start()
     {
+        rustyPunchSound = GetComponent<AudioSource>();
         cam = Camera.main;
         camScript = GetComponent<CameraScript>();
 
@@ -504,9 +507,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
         if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !rustyIsFalling)
         {
             
+
             if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
             {
-                
+                rustyPunchSound.Play();
                 Debug.Log("heyy");
                 secondPunchActivated = true;
                 //rustyAnim.SetBool("secondPunchActivated", true);
@@ -522,7 +526,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         if(secondPunchActivated && punchOneEnded)
         {
-            //rustyPunchSound.Play();
+            
             rustyAnim.SetBool("secondPunchActivated", true);
             //secondPunchActivated = false;
         }
