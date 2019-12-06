@@ -273,6 +273,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         saltyIsFalling = false;
         rustyIsFalling = false;
+
+
     }
 
 
@@ -501,14 +503,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         if(punchKeyDown && !isSalty && !rustyIsClimbing && !inRustyHands && !rustyIsFalling)
         {
+            
             if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
             {
+                
                 Debug.Log("heyy");
                 secondPunchActivated = true;
                 //rustyAnim.SetBool("secondPunchActivated", true);
             }
             else
             {
+                
                 punchActivated = true;
                 rustyAnim.SetBool("punchActivated", true);
                 rustyRig.velocity = Vector3.zero;
@@ -517,7 +522,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         if(secondPunchActivated && punchOneEnded)
         {
-            
+            //rustyPunchSound.Play();
             rustyAnim.SetBool("secondPunchActivated", true);
             //secondPunchActivated = false;
         }
@@ -899,6 +904,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
                 rustyIsFalling = true;
                 rustyAnim.SetBool("isFalling", true);
+              
             }
             else
             {
@@ -1049,6 +1055,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 {
                     if(punchActivated)
                     {
+
+
                         rustyRig.velocity = Vector3.zero;
                         punchActivated = false;
                         rustyAnim.SetBool("punchActivated", false);
