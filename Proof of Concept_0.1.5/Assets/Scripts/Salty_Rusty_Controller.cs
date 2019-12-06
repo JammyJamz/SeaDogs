@@ -325,7 +325,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyModelTrans.rotation = tempRot;
             blunderbuss.SetActive(true);
         }
-        else if(Input.GetMouseButtonUp(1) && isSalty)
+        else if(Input.GetMouseButtonUp(1) && isSalty && !saltyIsFalling && isAiming)
         {
             isAiming = false;
             StartLerpingCamAim(camAimPos.localPosition, camStartLocalPos);
@@ -947,11 +947,13 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 Vector3 actualVelocity = new Vector3(velocity.x, saltyRig.velocity.y, velocity.z);
 
                 saltyRig.velocity = actualVelocity;
+
                 //saltyRig.MovePosition(newPos);
             }
             else if (!isBeingThrown && isSalty && movZ == 0 && movX == 0)
             {
                 Vector3 actualVelocity = new Vector3(0f, saltyRig.velocity.y, 0f);
+
                 saltyRig.velocity = actualVelocity;
             }
             else if(isBeingThrown)

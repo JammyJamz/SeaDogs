@@ -12,6 +12,8 @@ TagManager:
   - Bullet
   - rustyCollider
   - saltyCollider
+  - batHitBox
+  - bat
   layers:
   - Default
   - TransparentFX

@@ -7,6 +7,8 @@ public class MeleeDetection : MonoBehaviour
     public int hp = 150;
     public GameObject rootObj;
 
+    public BatController bc;
+
     private bool leftHandHit;
 
     public GameObject particleEffect;
@@ -51,8 +53,14 @@ public class MeleeDetection : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
+        if (collider.gameObject.tag == "saltyCollider" || collider.gameObject.tag == "rustyCollider")
+            return;
         if ((this.gameObject.layer == 0 && collider.gameObject.tag == "rustyRightHand" && Salty_Rusty_Controller.inPunchAnimation && !hitInAnimAlready) || collider.gameObject.tag == "Bullet")
         {
+            if(bc != null && !bc.onCooldown)
+            {
+                return;
+            }
             if (!hitInAnimAlready)
                 hitInAnimAlready = true;
             Debug.Log(collider.name);
@@ -64,7 +72,7 @@ public class MeleeDetection : MonoBehaviour
                 Salty_Rusty_Controller.targetInRange = false;
                 particleEffect.SetActive(true);
                 GameObject.Destroy(transform.parent.gameObject.GetComponent<BoxCollider>());
-                GameObject.Destroy(transform.parent.gameObject, 0.2f);
+                GameObject.Destroy(transform.parent.parent.gameObject, 0.2f);
 
                 GameObject.Destroy(transform.root.gameObject.GetComponent<Rigidbody>());
 

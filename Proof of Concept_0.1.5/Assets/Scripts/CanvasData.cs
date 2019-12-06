@@ -12,6 +12,8 @@ public class CanvasData : MonoBehaviour
 
     public static GameObject platformSpawnText;
 
+    public static LevelLoader levelLoader;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,6 +24,8 @@ public class CanvasData : MonoBehaviour
         ladderDropText = localData.ladderDropText;
 
         platformSpawnText = localData.platformSpawnText;
+
+        levelLoader = localData.levelLoader;
     }
 
     // Update is called once per frame

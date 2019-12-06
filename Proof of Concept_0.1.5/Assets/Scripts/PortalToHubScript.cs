@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PortalToHubScript : MonoBehaviour
 {
+    public 
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +20,11 @@ public class PortalToHubScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        SceneManager.LoadScene("White Box 3");
+        if(Salty_Rusty_Controller.isSalty && collider.tag == "saltyCollider" || !Salty_Rusty_Controller.isSalty && collider.tag == "rustyCollider")
+        {
+            CanvasData.levelLoader.LoadLevel(1);
+        }
+        
+        Debug.Log("Heyy");
     }
 }
