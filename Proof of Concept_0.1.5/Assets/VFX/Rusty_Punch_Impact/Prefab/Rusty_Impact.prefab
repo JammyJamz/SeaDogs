@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9036545718360597012}
   - component: {fileID: 307877796531916795}
   m_Layer: 0
-  m_Name: Rusty_Impact_3
+  m_Name: Rusty_Impact
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6100,7 +6100,7 @@ ParticleSystem:
       maxGradient:
         serializedVersion: 2
         key0: {r: 0.9137255, g: 0.9764706, b: 1, a: 0}
-        key1: {r: 0.9607844, g: 0.39607847, b: 0.40000004, a: 0.9843137}
+        key1: {r: 0.9716981, g: 0.022917405, b: 0.029506361, a: 0.9843137}
         key2: {r: 0.9607844, g: 0.39607847, b: 0.40000004, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}

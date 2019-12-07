@@ -15,6 +15,11 @@ public class MainMenu : MonoBehaviour
     public GameObject ControlsObject;
     public GameObject GraphicsObject;
 
+    public void Start()
+    {
+        PlayerPrefs.SetInt("loadedFromMenu", 1);
+    }
+
     public void Play()
     {
         Cursor.visible = false;

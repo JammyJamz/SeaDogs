@@ -8,6 +8,8 @@ public class MediumGolemController : MonoBehaviour
     [HideInInspector]
     public bool slam;
 
+    public float cooldown = 1.5f;
+
     public Transform projectileStartPos;
 
     public GameObject projectile;
@@ -26,6 +28,9 @@ public class MediumGolemController : MonoBehaviour
     private bool wasJustPatrolling;
 
     private float timeTakenDuringSlerp = 1f;
+
+    private float timer = 0f;
+    
 
     NavMeshAgent agent;
 
@@ -74,6 +79,8 @@ public class MediumGolemController : MonoBehaviour
             }
             fov.FindVisibleTarget();
 
+            //Debug.Log(fov.saltyInView);
+
             if (fov.saltyInView && Vector3.Distance(Salty_Rusty_Controller.globalSalty.transform.position, transform.position) < 10f)
             {
                 if(wasJustPatrolling)
@@ -106,6 +113,14 @@ public class MediumGolemController : MonoBehaviour
                 }
                 agent.isStopped = true;
                 anim.SetBool("isPatrolling", false);
+
+                timer += Time.deltaTime;
+
+                if(timer >= cooldown)
+                {
+                    anim.SetBool("attack", true);
+                    timer = 0f;
+                }
             }
             else
             {
@@ -115,6 +130,8 @@ public class MediumGolemController : MonoBehaviour
 
             if (!agent.isStopped)
             {
+                anim.SetBool("isIdle", false);
+                timer = 0f;
                 if(!fov.saltyInView)
                 {
                     if(wasJustInView)
@@ -154,6 +171,10 @@ public class MediumGolemController : MonoBehaviour
                     }
                     wasJustInView = true;
                 }
+            }
+            else
+            {
+                anim.SetBool("isIdle", true);
             }
         }
         else
@@ -196,6 +217,14 @@ public class MediumGolemController : MonoBehaviour
                 }
                 agent.isStopped = true;
                 anim.SetBool("isPatrolling", false);
+
+                timer += Time.deltaTime;
+
+                if (timer >= cooldown)
+                {
+                    anim.SetBool("attack", true);
+                    timer = 0f;
+                }
             }
             else
             {
@@ -205,6 +234,7 @@ public class MediumGolemController : MonoBehaviour
 
             if (!agent.isStopped)
             {
+                anim.SetBool("isIdle", false);
                 if (!fov.rustyInView)
                 {
                     if (wasJustInView)
@@ -245,6 +275,10 @@ public class MediumGolemController : MonoBehaviour
                     wasJustInView = true;
                 }
             }
+            else
+            {
+                anim.SetBool("isIdle", true);
+            }
         }
 
     }
@@ -258,4 +292,8 @@ public class MediumGolemController : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        anim.SetBool("attack", false);
+    }
 }

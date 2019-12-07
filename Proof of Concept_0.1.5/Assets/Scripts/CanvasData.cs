@@ -14,6 +14,11 @@ public class CanvasData : MonoBehaviour
 
     public static LevelLoader levelLoader;
 
+    public static Animator saltyAnim;
+
+    public static GameObject missingJungleText;
+    public static GameObject missingTempleText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,6 +31,11 @@ public class CanvasData : MonoBehaviour
         platformSpawnText = localData.platformSpawnText;
 
         levelLoader = localData.levelLoader;
+
+        saltyAnim = localData.saltyAnim;
+
+        missingJungleText = localData.missingJungleText;
+        missingTempleText = localData.missingTempleText;
     }
 
     // Update is called once per frame

@@ -18,10 +18,13 @@ public class UpdateTailAnimator : MonoBehaviour
     {
 
         anim.SetFloat("PosZ", SaltyAnim.GetFloat("PosZ"));
-        anim.SetFloat("PosX", SaltyAnim.GetFloat("PosZ"));
+        anim.SetFloat("PosX", SaltyAnim.GetFloat("PosX"));
 
         anim.SetBool("isFalling", SaltyAnim.GetBool("isFalling"));
         anim.SetBool("isAiming", SaltyAnim.GetBool("isAiming"));
+        anim.SetBool("isClimbing", SaltyAnim.GetBool("isClimbing"));
+        anim.SetBool("isRunning", SaltyAnim.GetBool("isRunning"));
+        anim.SetBool("flinch", SaltyAnim.GetBool("flinch"));
 
     }
 }

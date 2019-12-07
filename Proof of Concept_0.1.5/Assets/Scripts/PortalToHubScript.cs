@@ -25,6 +25,5 @@ public class PortalToHubScript : MonoBehaviour
             CanvasData.levelLoader.LoadLevel(1);
         }
         
-        Debug.Log("Heyy");
     }
 }

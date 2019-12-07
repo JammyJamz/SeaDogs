@@ -10,8 +10,12 @@ public class LocalCanvasData : MonoBehaviour
     public GameObject ladderDropText;
 
     public GameObject platformSpawnText;
+    public GameObject missingJungleText;
+    public GameObject missingTempleText;
 
     public LevelLoader levelLoader;
+
+    public Animator saltyAnim;
 
     // Start is called before the first frame update
     void Start()

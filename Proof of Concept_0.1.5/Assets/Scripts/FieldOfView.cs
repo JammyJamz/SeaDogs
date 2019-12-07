@@ -30,42 +30,42 @@ public class FieldOfView : MonoBehaviour
         if(Salty_Rusty_Controller.isSalty)
         {
             saltyInView = false;
-            Collider[] targetsinViewRadius = Physics.OverlapSphere(transform.position, viewRadius, saltyMask);
-
+            Collider[] targetsinViewRadius = Physics.OverlapSphere(transform.position + Vector3.up*0.5f, viewRadius, saltyMask);
             for (int i = 0; i < targetsinViewRadius.Length; i++)
             {
                 if (targetsinViewRadius[i].gameObject.tag == "saltyCollider")
                 {
-                    Transform target = Salty_Rusty_Controller.globalSalty.transform;
-                    Vector3 dirToTarget = (target.position - transform.position).normalized;
+                    
+                    Vector3 targetsPos = Salty_Rusty_Controller.globalSalty.transform.position + Vector3.up*0.5f;
+                    Vector3 dirToTarget = (targetsPos - (transform.position + Vector3.up * 0.5f)).normalized;
                     if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
                     {
-                        float dist = Vector3.Distance(transform.position, target.position);
-
-                        if(!Physics.Raycast(transform.position, dirToTarget, dist, obstacleMask, QueryTriggerInteraction.Ignore))
+                        float dist = Vector3.Distance((transform.position + Vector3.up * 0.5f), targetsPos);
+                        if (!Physics.Raycast((transform.position + Vector3.up * 0.5f), dirToTarget, dist, obstacleMask, QueryTriggerInteraction.Ignore))
                         {
                             saltyInView = true;
                         }
                     }
                 }
             }
+
         }
         else
         {
             rustyInView = false;
-            Collider[] targetsinViewRadius = Physics.OverlapSphere(transform.position, viewRadius, rustyMask);
+            Collider[] targetsinViewRadius = Physics.OverlapSphere(transform.position + Vector3.up * 0.5f, viewRadius, rustyMask);
 
             for (int i = 0; i < targetsinViewRadius.Length; i++)
             {
                 if (targetsinViewRadius[i].gameObject.tag == "rustyCollider")
                 {
-                    Transform target = Salty_Rusty_Controller.globalRusty.transform;
-                    Vector3 dirToTarget = (target.position - transform.position).normalized;
+                    Vector3 targetsPos = Salty_Rusty_Controller.globalRusty.transform.position + Vector3.up * 0.5f;
+                    Vector3 dirToTarget = (targetsPos - (transform.position + Vector3.up * 0.5f)).normalized;
                     if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
                     {
-                        float dist = Vector3.Distance(transform.position, target.position);
+                        float dist = Vector3.Distance(transform.position + Vector3.up * 0.5f, targetsPos);
 
-                        if (!Physics.Raycast(transform.position, dirToTarget, dist, obstacleMask, QueryTriggerInteraction.Ignore))
+                        if (!Physics.Raycast(transform.position + Vector3.up * 0.5f, dirToTarget, dist, obstacleMask, QueryTriggerInteraction.Ignore))
                         {
                             rustyInView = true;
                         }

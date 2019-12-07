@@ -37,7 +37,7 @@ public class BulletsController : MonoBehaviour
     void Update()
     {
         
-        if(Salty_Rusty_Controller.isAiming && (saltyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("aiming") || saltyAnim.GetAnimatorTransitionInfo(0).userNameHash == Animator.StringToHash("aiming")))
+        if(Salty_Rusty_Controller.isAiming && (saltyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("aiming") /*|| saltyAnim.GetAnimatorTransitionInfo(0).userNameHash == Animator.StringToHash("aiming")*/))
         {
             if (!startedAiming)
             {
@@ -47,13 +47,14 @@ public class BulletsController : MonoBehaviour
 
             timer += Time.deltaTime;
 
-            if (Input.GetMouseButtonDown(0) && timer >= cooldown)
+            if (Input.GetMouseButtonDown(0) && timer >= cooldown && saltyAnim.GetCurrentAnimatorStateInfo(0).tagHash != Animator.StringToHash("flinch") && saltyAnim.GetAnimatorTransitionInfo(0).userNameHash != Animator.StringToHash("flinch"))
             {
                 BlunderbussScript.shot = true;
                 saltyBlunderbuss.Play();
                 mouseDown = true;
                 Instantiate(bullet, transform.position, transform.rotation);
                 timer = 0f;
+                saltyAnim.SetBool("shot", true);
             }
         }
         else
@@ -61,5 +62,10 @@ public class BulletsController : MonoBehaviour
             startedAiming = false;
             timer = cooldown;
         }
+    }
+
+    private void LateUpdate()
+    {
+        saltyAnim.SetBool("shot", false);
     }
 }

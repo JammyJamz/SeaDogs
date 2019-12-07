@@ -108,4 +108,11 @@ public class PauseMenu : MonoBehaviour
         Application.Quit();
         Debug.Log("Quitting game...");
     }
+
+    public static void GameWon()
+    {
+        gameWon = true;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
 }

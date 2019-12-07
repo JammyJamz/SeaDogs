@@ -7,7 +7,7 @@ using UnityEditor;
 public class PortalToLevelScript : MonoBehaviour
 {
 
-    public string scene;
+    public int scene;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +23,6 @@ public class PortalToLevelScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        SceneManager.LoadScene(scene);
+        CanvasData.levelLoader.LoadLevel(scene);
     }
 }

@@ -64,10 +64,11 @@ public class SmallGolemController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 targetDir = transform.position - Salty_Rusty_Controller.globalSalty.transform.position;
-        Vector3 targetPos = Salty_Rusty_Controller.globalSalty.transform.position + targetDir.normalized;
+        
         if (Salty_Rusty_Controller.isSalty)
         {
+            Vector3 targetDir = transform.position - Salty_Rusty_Controller.globalSalty.transform.position;
+            Vector3 targetPos = Salty_Rusty_Controller.globalSalty.transform.position + targetDir.normalized;
             if (!fov.saltyInView)
             {
                 wasJustPatrolling = true;
@@ -161,6 +162,8 @@ public class SmallGolemController : MonoBehaviour
         }
         else
         {
+            Vector3 targetDir = transform.position - Salty_Rusty_Controller.globalRusty.transform.position;
+            Vector3 targetPos = Salty_Rusty_Controller.globalRusty.transform.position + targetDir.normalized;
             if (!fov.rustyInView)
             {
                 wasJustPatrolling = true;

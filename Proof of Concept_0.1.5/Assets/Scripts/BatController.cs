@@ -13,7 +13,7 @@ public class BatController : MonoBehaviour
     private Rigidbody rb;
     private bool reachedPoint;
     private bool reachedPointAfterAttack;
-    private FieldOfView fov;
+    public FieldOfView fov;
 
     private float timer;
 

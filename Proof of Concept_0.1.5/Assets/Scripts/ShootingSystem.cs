@@ -43,7 +43,7 @@ public class ShootingSystem : MonoBehaviour
         else if (Salty_Rusty_Controller.isSalty == false)
             target = rustyPos;
 
-        Debug.Log(target.name);
+        //Debug.Log(target.name);
 
         if (beam && lastProjectiles.Count <= 0)
         {

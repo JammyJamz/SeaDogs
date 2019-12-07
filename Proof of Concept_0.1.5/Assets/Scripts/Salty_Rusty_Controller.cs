@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class Salty_Rusty_Controller : MonoBehaviour
 {
     private AudioSource rustyPunchSound;
+
+    public Transform spawnPos;
+    public Transform menuSpawnPos;
+
 
     public static bool inThrowTrigger;
     public float runningSpeed = 15f;
@@ -168,6 +173,15 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Start()
     {
+        if(SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) == 1)
+        {
+            transform.position = menuSpawnPos.position;
+            PlayerPrefs.SetInt("loadedFromMenu", 0);
+        }
+        else if(SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) != 1)
+        {
+            transform.position = spawnPos.position;
+        }
         rustyPunchSound = GetComponent<AudioSource>();
         cam = Camera.main;
         camScript = GetComponent<CameraScript>();
@@ -277,7 +291,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         saltyIsFalling = false;
         rustyIsFalling = false;
 
-
+        HealthBarController.currentHealth = 3;
     }
 
 
@@ -468,7 +482,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     saltyRig.useGravity = false;
 
                     // turn salty collider off, reset velocity, turn climb collider on (so does not go through the floor)
-                    sCollider.gameObject.SetActive(false);
+                    sCollider.GetComponent<CapsuleCollider>().isTrigger = true;
                     saltyRig.velocity = Vector3.zero;
                     climbCollider.gameObject.SetActive(true);
                 }
@@ -486,6 +500,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
             inRustyHands = true;
             sCollider.gameObject.SetActive(false);
             saltyAnim.SetBool("isReadyForThrow", true);
+            rustyRig.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePosition;
+            rustyAnim.SetFloat("PosZ", 0f);
 
             Debug.DrawRay(Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f), Vector3.up, Color.red, 20f);
             StartLerpingSalty(salty.transform.position, Vector3.Lerp(rustyRightHand.position, rustyLeftHand.position, 0.5f) + (rustyModelTans.forward * 0.25f) - Vector3.up*0.5f);
@@ -698,7 +714,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (isSalty)
             {
                 // update anim move vars
-                if(!isAiming)
+                if(!isAiming && !isClimbing)
                 {
                     saltyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
                     saltyAnim.SetFloat("PosX", 0f);
@@ -755,7 +771,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 saltyAnim.SetBool("isIdleWall", true);
                 saltyAnim.SetBool("isFalling", false);
             }
-            
+            saltyAnim.SetFloat("PosX", movX);
+            saltyAnim.SetFloat("PosZ", movZ);
+
         }
 
     }
@@ -764,6 +782,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     {
         Vector3 movHorizontal;
         Vector3 movVertical;
+        bool isRunning = false;
 
         saltyAnim.SetBool("jumpActivated", false);
 
@@ -788,7 +807,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             }
 
             
-            if (!rustyIsFalling && !rustyOnPlatform)
+            if (!rustyIsFalling && !rustyOnPlatform && !inRustyHands)
             {
                 rustyAgent.enabled = true;
             }
@@ -799,7 +818,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             rustyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
             rustyRig.interpolation = RigidbodyInterpolation.Interpolate;
 
-            if(saltyOnPlatform || saltyIsFalling)
+            if((saltyOnPlatform || saltyIsFalling) && !inRustyHands)
             {
                 saltyRig.interpolation = RigidbodyInterpolation.Interpolate;
                 saltyRig.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
@@ -959,19 +978,22 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 saltyRig.velocity = actualVelocity;
 
                 //saltyRig.MovePosition(newPos);
+                isRunning = true;
+                
             }
             else if (!isBeingThrown && isSalty && movZ == 0 && movX == 0)
             {
                 Vector3 actualVelocity = new Vector3(0f, saltyRig.velocity.y, 0f);
 
                 saltyRig.velocity = actualVelocity;
+                isRunning = true;
             }
             else if(isBeingThrown)
             {
                 saltyRig.velocity = saltyRig.velocity;
                 saltyThrowVFX.SetActive(true);
             }
-            else if (!isSalty)
+            else if (!isSalty && !inRustyHands)
             {
                 // update movement running value in animators
                 rustyAnim.SetFloat("PosZ", Mathf.Clamp(Mathf.Abs(velocity.magnitude), 0f, 1f));
@@ -1111,7 +1133,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 }
 
                 // rusty movement code
-                if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.4f, rustyModelTans.forward, 0.6f, ~LayerMask.GetMask("Rusty"), QueryTriggerInteraction.Ignore))
+                if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo && !inRustyHands && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.4f, rustyModelTans.forward, 0.6f, ~LayerMask.GetMask("Rusty"), QueryTriggerInteraction.Ignore))
                 {
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);
@@ -1122,6 +1144,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(0f, rustyRig.velocity.y, 0f);
                     rustyRig.velocity = actualVelocity;
+                }
+                else if(inRustyHands)
+                {
+                    rustyRig.velocity = Vector3.zero;
                 }
             }
             enteredLedgeGrab = false;
@@ -1229,6 +1255,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
         else if (throwActivated)
         {
+            rustyRig.constraints = RigidbodyConstraints.FreezeRotation;
             enteredLedgeGrab = false;
             // turn isKinematic off for salty and gravity back on
             saltyRig.isKinematic = false;
@@ -1269,6 +1296,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         movX = 0f;
         movZ = 0f;
         jumpActivated = false;
+        saltyAnim.SetBool("isRunning", isRunning);
     }
 
     private IEnumerator ColliderDelay(float waitTime)
@@ -1291,6 +1319,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         // turn collider back on and climb collider off
         sCollider.gameObject.SetActive(true);
+        sCollider.GetComponent<CapsuleCollider>().isTrigger = false;
+
         climbCollider.gameObject.SetActive(false);
 
         // *** may be unneccessary now (not sure) *** update exit rotation to match Y euler of current camera Pivot rotation

@@ -6,7 +6,7 @@ public class SmallGolemMeleeDetection : MonoBehaviour
 {
     public SmallGolemEvents sge;
 
-    public void OnTriggerEnter(Collider other)
+    public void OnTriggerStay(Collider other)
     {
         if(sge.inAttackWindow && !sge.hitInThisWindow)
         {
