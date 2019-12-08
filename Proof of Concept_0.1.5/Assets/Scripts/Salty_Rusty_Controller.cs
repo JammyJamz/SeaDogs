@@ -9,9 +9,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
     private AudioSource rustyPunchSound;
 
     public Transform spawnPos;
+    public Transform rustySpawnPos;
     public Transform menuSpawnPos;
 
-
+    public static bool usingXboxController;
     public static bool inThrowTrigger;
     public float runningSpeed = 15f;
     public float mouseSens = 15f;
@@ -141,6 +142,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
     public static float throwForceMagnitude;
     public static Transform endThrowPoint;
 
+    float lastRightTrigger;
+    float lastLeftTrigger;
+
     void StartLerping()
     {
         _isLerping = true;
@@ -173,14 +177,18 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Start()
     {
-        if(SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) == 1)
+        lastRightTrigger = 0;
+        lastLeftTrigger = 0;
+        usingXboxController = false;
+        if (SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) == 1)
         {
             transform.position = menuSpawnPos.position;
             PlayerPrefs.SetInt("loadedFromMenu", 0);
         }
-        else if(SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) != 1)
+        else if (SceneManager.GetActiveScene().name == "White Box 1" && PlayerPrefs.GetInt("loadedFromMenu", 0) != 1)
         {
             transform.position = spawnPos.position;
+            rustyAgent.Warp(rustySpawnPos.position);
         }
         rustyPunchSound = GetComponent<AudioSource>();
         cam = Camera.main;
@@ -224,7 +232,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         // update parent of cam pivot placeholder
         camPivotPlaceHolder.SetParent(salty.transform);
-  
+
         // update Nav Agents
         rustyAgent.enabled = true;
         saltyAgent.enabled = false;
@@ -252,12 +260,12 @@ public class Salty_Rusty_Controller : MonoBehaviour
         newRot = saltyModelTrans.rotation;
         newRot2 = saltyModelTrans.rotation;
 
-        Vector3 tempVert = salty.transform.forward*1;
-        Vector3 tempHor = (salty.transform.right)*1;
+        Vector3 tempVert = salty.transform.forward * 1;
+        Vector3 tempHor = (salty.transform.right) * 1;
 
         Quaternion rot = Quaternion.LookRotation((tempVert + tempHor).normalized, Vector3.up);
 
-        rotInc = (salty.transform.rotation.eulerAngles.y - rot.eulerAngles.y)/2;
+        rotInc = (salty.transform.rotation.eulerAngles.y - rot.eulerAngles.y) / 2;
 
         punchKeyDown = false;
         punchActivated = false;
@@ -297,21 +305,77 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetButtonDown("Xbox Start") || Input.GetButtonDown("Xbox Select") || Input.GetButtonDown("Xbox RS") ||
+           Input.GetButtonDown("Xbox LS") || Input.GetButtonDown("Xbox B") || Input.GetButtonDown("Xbox LB") ||
+           Input.GetButtonDown("Xbox RB") || Input.GetButtonDown("Xbox Interact") || Input.GetButtonDown("Xbox Jump") ||
+           Input.GetButtonDown("Xbox Character Switch") || Input.GetButtonDown("Xbox Start") || Input.GetAxisRaw("Xbox Right Trigger") > 0 ||
+           Input.GetAxisRaw("Xbox Left Trigger") > 0 || Input.GetAxisRaw("Xbox Dpad Up Down") != 0 || Input.GetAxisRaw("Xbox Dpad Left Right") != 0 ||
+           Input.GetAxisRaw("Controller X") != 0 || Input.GetAxisRaw("Controller Y") != 0 || Input.GetAxisRaw("Xbox Vertical") != 0 ||
+           Input.GetAxisRaw("Xbox Horizontal") != 0)
+        {
+            usingXboxController = true;
+        }
+        else
+        {
+            if (Input.anyKeyDown)
+                usingXboxController = false;
+            if (Input.GetAxisRaw("Mouse X") != 0 || Input.GetAxisRaw("Mouse Y") != 0)
+                usingXboxController = false;
+        }
         // reset vars
         climbKeyDown = false;
 
         //rustyAnim.SetBool("secondPunchActivated", false);
 
         // get movement input
-        movZ = Input.GetAxisRaw("Vertical");
-        movX = Input.GetAxisRaw("Horizontal");
+        if(!usingXboxController)
+        {
+            movZ = Input.GetAxisRaw("Vertical");
+            movX = Input.GetAxisRaw("Horizontal");
+        }
+        else
+        {
+            movX = Input.GetAxisRaw("Xbox Horizontal");
+            movZ = Input.GetAxisRaw("Xbox Vertical");
+        }
 
         // get button inputs
-        switchKeyDown = Input.GetKeyDown("e");
-        climbKeyDown = Input.GetKeyDown("r");
-        throwKeyDown = Input.GetKeyDown("v");
-        jumpKeyDown = Input.GetKeyDown("space");
+        switchKeyDown = Input.GetButtonDown("PC Character Switch");
+        if(!switchKeyDown)
+        {
+            switchKeyDown = Input.GetButtonDown("Xbox Character Switch");
+        }
+
+        climbKeyDown = Input.GetButtonDown("PC Interact");
+        if(!climbKeyDown)
+        {
+            climbKeyDown = Input.GetButtonDown("Xbox Interact");
+        }
+
+        throwKeyDown = Input.GetButtonDown("PC Interact");
+        if (!throwKeyDown)
+        {
+            throwKeyDown = Input.GetButtonDown("Xbox Interact");
+        }
+
+        jumpKeyDown = Input.GetButtonDown("PC Jump");
+        if(!jumpKeyDown)
+        {
+            jumpKeyDown = Input.GetButtonDown("Xbox Jump");
+        }
+
+
+        float rightTriggerInput = Input.GetAxisRaw("Xbox Right Trigger");
+        bool triggerDown = false;
+
+        if (lastRightTrigger == 0 && rightTriggerInput > 0)
+            triggerDown = true;
+
         punchKeyDown = Input.GetMouseButtonDown(0);
+        if(!punchKeyDown)
+        {
+            punchKeyDown = triggerDown;
+        }
 
         // get camera input
         mouseX += Input.GetAxis("Mouse X") * Time.deltaTime * mouseSens;
@@ -328,7 +392,25 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 jumpActivated = true;
         }
 
-        if(Input.GetMouseButtonDown(1) && isSalty && !saltyIsFalling)
+        bool aimKeyDown = Input.GetMouseButtonDown(1);
+        bool leftTriggerDown = false;
+        float leftTriggerInput = Input.GetAxisRaw("Xbox Left Trigger");
+
+        if (lastLeftTrigger == 0 && leftTriggerInput > 0)
+            leftTriggerDown = true;
+        if (!aimKeyDown)
+            aimKeyDown = leftTriggerDown;
+
+        bool aimKeyUp = Input.GetMouseButtonUp(1);
+        bool leftTriggerUp = false;
+
+        if (lastLeftTrigger >= 0 && leftTriggerInput == 0)
+            leftTriggerUp = true;
+        if (!aimKeyUp && usingXboxController)
+            aimKeyUp = leftTriggerUp;
+
+
+        if (aimKeyDown && isSalty && !saltyIsFalling)
         {
             isAiming = true;
             StartLerpingCamAim(cam.transform.localPosition, camAimPos.localPosition);
@@ -344,7 +426,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             saltyModelTrans.rotation = tempRot;
             blunderbuss.SetActive(true);
         }
-        else if(Input.GetMouseButtonUp(1) && isSalty && !saltyIsFalling && isAiming)
+        else if(aimKeyUp && isSalty && !saltyIsFalling && isAiming)
         {
             isAiming = false;
             StartLerpingCamAim(camAimPos.localPosition, camStartLocalPos);
@@ -527,7 +609,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
             if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
             {
                 rustyPunchSound.Play();
-                Debug.Log("heyy");
                 secondPunchActivated = true;
                 //rustyAnim.SetBool("secondPunchActivated", true);
             }
@@ -776,6 +857,8 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         }
 
+        lastRightTrigger = rightTriggerInput;
+        lastLeftTrigger = leftTriggerInput;
     }
 
     private void FixedUpdate()
@@ -1329,7 +1412,6 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     public void PunchOneEnded()
     {
-        Debug.Log("hehehe");
     }
 
     private void LateUpdate()

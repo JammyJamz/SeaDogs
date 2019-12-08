@@ -114,6 +114,8 @@ public class SmallGolemController : MonoBehaviour
 
             if (anim.GetBool("isPatrolling"))
             {
+                anim.SetBool("startAttack", false);
+                anim.SetBool("isChasing", false);
                 agent.speed = walkingSpeed;
                 if (wasJustInView)
                 {
@@ -154,9 +156,16 @@ public class SmallGolemController : MonoBehaviour
                 agent.SetDestination(targetPos);
 
                 if (Vector3.Distance(transform.position, Salty_Rusty_Controller.globalSalty.transform.position) < 2f)
+                {
                     anim.SetBool("startAttack", true);
+                    anim.SetBool("isChasing", false);
+                }
                 else
+                {
                     anim.SetBool("startAttack", false);
+                    anim.SetBool("isChasing", true);
+                }
+
                 wasJustInView = true;
             }
         }
@@ -209,6 +218,8 @@ public class SmallGolemController : MonoBehaviour
 
             if (anim.GetBool("isPatrolling"))
             {
+                anim.SetBool("startAttack", false);
+                anim.SetBool("isChasing", false);
                 agent.speed = walkingSpeed;
                 if (wasJustInView)
                 {
@@ -249,13 +260,24 @@ public class SmallGolemController : MonoBehaviour
                 agent.SetDestination(targetPos);
 
                 if (Vector3.Distance(transform.position, Salty_Rusty_Controller.globalRusty.transform.position) < 2f)
+                {
                     anim.SetBool("startAttack", true);
+                    anim.SetBool("isChasing", false);
+                }
                 else
+                {
                     anim.SetBool("startAttack", false);
+                    anim.SetBool("isChasing", true);
+                }
                 wasJustInView = true;
             }
         }
 
+    }
+
+    public void LateUpdate()
+    {
+        anim.SetBool("tookDamage", false);
     }
 
     private void FixedUpdate()
@@ -263,4 +285,8 @@ public class SmallGolemController : MonoBehaviour
 
     }
 
+    public void Hit()
+    {
+        anim.Play("Small_Golem_FLinch", 0, 0);
+    }
 }

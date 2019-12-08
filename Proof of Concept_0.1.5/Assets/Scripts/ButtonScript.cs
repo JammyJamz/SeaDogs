@@ -18,12 +18,14 @@ public class ButtonScript : MonoBehaviour
     private bool inTrigger;
 
     private bool buttonKeyDown;
+    private bool xboxButtonKeyDown;
 
     // Start is called before the first frame update
     void Start()
     {
         inTrigger = false;
         buttonKeyDown = false;
+        xboxButtonKeyDown = false;
         ladderDropped = false;
 
         if(isLadderButton)
@@ -45,11 +47,16 @@ public class ButtonScript : MonoBehaviour
         }
         if(Input.GetKeyDown("3"))
             buttonKeyDown = true;
+
+        if(!buttonKeyDown && Input.GetButtonDown("Xbox Interact"))
+        {
+            xboxButtonKeyDown = true;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (buttonKeyDown)
+        if (buttonKeyDown || xboxButtonKeyDown)
         {
             if (inTrigger)
             {
@@ -57,8 +64,10 @@ public class ButtonScript : MonoBehaviour
                 ladder.SetActive(true);
             }
 
-            buttonKeyDown = false;
+            
         }
+        buttonKeyDown = false;
+        xboxButtonKeyDown = false;
     }
 
     private void OnTriggerStay(Collider collider)

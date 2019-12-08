@@ -27,14 +27,20 @@ public class HUDCharacterSwap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!PauseMenu.GameIsPaused && Input.GetKeyDown(KeyCode.E) && !Salty_Rusty_Controller.isSalty)
+        bool xboxInput = Input.GetButtonDown("Xbox Character Switch");
+        bool pcInput = Input.GetButtonDown("PC Character Switch");
+
+        if (pcInput)
+            xboxInput = false;
+
+        if (!PauseMenu.GameIsPaused && (xboxInput || pcInput) && !Salty_Rusty_Controller.isSalty)
         {
             saltyImgSmall.SetActive(true);
             saltyImgBig.SetActive(false);
             rustyImgSmall.SetActive(false);
             rustyImgBig.SetActive(true);
         }
-        else if (!PauseMenu.GameIsPaused && Input.GetKeyDown(KeyCode.E) && Salty_Rusty_Controller.isSalty)
+        else if (!PauseMenu.GameIsPaused && (xboxInput || pcInput) && Salty_Rusty_Controller.isSalty)
         {
             saltyImgSmall.SetActive(false);
             saltyImgBig.SetActive(true);

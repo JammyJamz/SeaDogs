@@ -42,7 +42,7 @@ public class PauseMenu : MonoBehaviour
         coinText.text = coinsCollected.ToString();
         if (!gameWon)
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Xbox Start"))
             {
                 if (GameIsPaused)
                 {

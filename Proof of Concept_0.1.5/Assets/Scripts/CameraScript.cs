@@ -45,9 +45,10 @@ public class CameraScript : MonoBehaviour
     {
         // get camera input
         mouseX += Input.GetAxis("Mouse X") * Time.deltaTime * mouseSens;
-        mouseX += Input.GetAxis("Controller X") * Time.deltaTime * mouseSens;
+        mouseX += Input.GetAxis("Controller Y") * Time.deltaTime * mouseSens;
 
         mouseY += Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSens;
+        mouseY += Input.GetAxis("Controller X") * Time.deltaTime * mouseSens;
 
         collisionHandler.UpdateCameraClipPoints(cam.transform.position, cam.transform.rotation, ref collisionHandler.adjustedCameraClipPoints);
         collisionHandler.UpdateCameraClipPoints(desiredPosition.transform.position, cam.transform.rotation, ref collisionHandler.desiredCameraClipPoints);

@@ -62,7 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\HealthPickUp.cs" />
     <Compile Include="Assets\Imported Assets\Standard Assets\2D\Scripts\Camera2DFollow.cs" />
     <Compile Include="Assets\Imported Assets\Standard Assets\2D\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Imported Assets\Standard Assets\2D\Scripts\Platformer2DUserControl.cs" />
@@ -158,8 +157,6 @@
     <Compile Include="Assets\Imported Assets\Standard Assets\Vehicles\Car\Scripts\SkidTrail.cs" />
     <Compile Include="Assets\Imported Assets\Standard Assets\Vehicles\Car\Scripts\Suspension.cs" />
     <Compile Include="Assets\Imported Assets\Standard Assets\Vehicles\Car\Scripts\WheelEffects.cs" />
-    <Compile Include="Assets\JungleKey.cs" />
-    <Compile Include="Assets\KeyCanvasTracker.cs" />
     <Compile Include="Assets\Scripts\BaseProjectile.cs" />
     <Compile Include="Assets\Scripts\BatController.cs" />
     <Compile Include="Assets\Scripts\BatHitDetection.cs" />
@@ -183,8 +180,11 @@
     <Compile Include="Assets\Scripts\FPS.cs" />
     <Compile Include="Assets\Scripts\GroundEnemyController.cs" />
     <Compile Include="Assets\Scripts\HealthBarController.cs" />
+    <Compile Include="Assets\Scripts\HealthPickUp.cs" />
     <Compile Include="Assets\Scripts\HUDCharacterSwap.cs" />
     <Compile Include="Assets\Scripts\IKControl.cs" />
+    <Compile Include="Assets\Scripts\JungleKey.cs" />
+    <Compile Include="Assets\Scripts\KeyCanvasTracker.cs" />
     <Compile Include="Assets\Scripts\LadderPoints.cs" />
     <Compile Include="Assets\Scripts\LedgeTriggerScript.cs" />
     <Compile Include="Assets\Scripts\LevelLoader.cs" />
@@ -211,14 +211,14 @@
     <Compile Include="Assets\Scripts\SmallGolemMeleeDetection.cs" />
     <Compile Include="Assets\Scripts\SparklesScript.cs" />
     <Compile Include="Assets\Scripts\TargetPositionScript.cs" />
+    <Compile Include="Assets\Scripts\TempleKey.cs" />
+    <Compile Include="Assets\Scripts\TemporaryWinScript.cs" />
     <Compile Include="Assets\Scripts\ThrowTriggerScript.cs" />
     <Compile Include="Assets\Scripts\TrackingProjectile.cs" />
     <Compile Include="Assets\Scripts\TurrentTracking.cs" />
     <Compile Include="Assets\Scripts\UpdateTailAnimator.cs" />
     <Compile Include="Assets\Scripts\WallCanvasUpdate.cs" />
     <Compile Include="Assets\Scripts\WinScript.cs" />
-    <Compile Include="Assets\TempleKey.cs" />
-    <Compile Include="Assets\TemporaryWinScript.cs" />
     <Compile Include="Assets\VFX\Water_VFX\Scripts\Floating_Script.cs" />
     <None Include="Assets\Imported Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
     <None Include="Assets\Imported Assets\Standard Assets\Effects\ToonShading\Shaders\ToonBasic.shader" />

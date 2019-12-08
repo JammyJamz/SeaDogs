@@ -295,5 +295,13 @@ public class MediumGolemController : MonoBehaviour
     private void LateUpdate()
     {
         anim.SetBool("attack", false);
+        anim.SetBool("damageTaken", false);
+    }
+
+    public void Hit()
+    {
+        Debug.Log("hey");
+        anim.Play("Medium Golem flinch", 0, 0);
+        //anim.SetBool("damageTaken", true);
     }
 }

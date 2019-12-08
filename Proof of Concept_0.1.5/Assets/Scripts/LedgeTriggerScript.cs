@@ -21,7 +21,6 @@ public class LedgeTriggerScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        Debug.Log(collider.tag);
         if (collider.gameObject.tag == "saltyLeftHand")
         {
             Salty_Rusty_Controller.saltyLeftHandInTrigger = true;
