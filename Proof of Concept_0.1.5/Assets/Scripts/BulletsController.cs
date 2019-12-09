@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BulletsController : MonoBehaviour
 {
-    private AudioSource saltyBlunderbuss;
+    public AudioSource saltyBlunderbuss;
 
     public GameObject bullet;
 
@@ -29,7 +29,6 @@ public class BulletsController : MonoBehaviour
 
     private void Start()
     {
-        saltyBlunderbuss = GetComponent<AudioSource>();
         lastXboxInput = 0f;
     }
 

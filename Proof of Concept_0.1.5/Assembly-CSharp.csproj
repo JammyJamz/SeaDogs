@@ -200,6 +200,7 @@
     <Compile Include="Assets\Scripts\MovingPlatformScript.cs" />
     <Compile Include="Assets\Scripts\NormalProjectile.cs" />
     <Compile Include="Assets\Scripts\OptionsMenu.cs" />
+    <Compile Include="Assets\Scripts\PauseGameSounds.cs" />
     <Compile Include="Assets\Scripts\PauseMenu.cs" />
     <Compile Include="Assets\Scripts\PortalManager.cs" />
     <Compile Include="Assets\Scripts\PortalToHubScript.cs" />
@@ -208,6 +209,7 @@
     <Compile Include="Assets\Scripts\QualItem.cs" />
     <Compile Include="Assets\Scripts\ResItem.cs" />
     <Compile Include="Assets\Scripts\ResScrollbar.cs" />
+    <Compile Include="Assets\Scripts\RotateHealth.cs" />
     <Compile Include="Assets\Scripts\Salty_Rusty_Controller.cs" />
     <Compile Include="Assets\Scripts\SaltyIKControl.cs" />
     <Compile Include="Assets\Scripts\ShootingSystem.cs" />

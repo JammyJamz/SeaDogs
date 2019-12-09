@@ -15,6 +15,7 @@ public class CanvasData : MonoBehaviour
     public static LevelLoader levelLoader;
 
     public static Animator saltyAnim;
+    public static Animator rustyAnim;
 
     public static GameObject missingJungleText;
     public static GameObject missingTempleText;
@@ -33,6 +34,7 @@ public class CanvasData : MonoBehaviour
         levelLoader = localData.levelLoader;
 
         saltyAnim = localData.saltyAnim;
+        rustyAnim = localData.rustyAnim;
 
         missingJungleText = localData.missingJungleText;
         missingTempleText = localData.missingTempleText;

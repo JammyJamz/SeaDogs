@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-
+    public static bool inMainMenu;
     public static bool GameIsPaused = false;
 
     public static int numOfReses;
@@ -70,6 +70,7 @@ public class MainMenu : MonoBehaviour
 
     public void Start()
     {
+        inMainMenu = true;
         usingXboxController = false;
         quitMenuIndex = 0;
         inQuit = false;
@@ -398,6 +399,11 @@ public class MainMenu : MonoBehaviour
                 {
                     no.Select();
                 }
+
+                if (Input.GetButtonDown("Xbox B"))
+                {
+                    backFromQuitConfirm();
+                }
             }
 
 
@@ -446,6 +452,7 @@ public class MainMenu : MonoBehaviour
         levelLoader.LoadLevel(1);
         GameIsPaused = false;
         Time.timeScale = 1f;
+        inMainMenu = false;
     }
     public void Options()
     {

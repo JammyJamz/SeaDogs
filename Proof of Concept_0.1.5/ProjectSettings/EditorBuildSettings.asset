@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: 333229264ef1f234294249210164c957
   - enabled: 1
-    path: Assets/Animated Main Menu.unity
+    path: Assets/Scenes/Animated Main Menu.unity
     guid: 16793e6a9aca1a244876931923c98ce8
   - enabled: 1
     path: Assets/Scenes/White Box 1.unity

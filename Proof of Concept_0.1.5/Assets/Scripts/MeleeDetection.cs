@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MeleeDetection : MonoBehaviour
 {
+    public AudioSource screech;
     public int hp = 150;
     public GameObject rootObj;
 
@@ -76,6 +77,8 @@ public class MeleeDetection : MonoBehaviour
                 mgc.Hit();
             if (hp == 0)
             {
+                if (screech != null)
+                    screech.Stop();
                 //Debug.Log("setting false...");
                 Salty_Rusty_Controller.targetInRange = false;
                 particleEffect.SetActive(true);

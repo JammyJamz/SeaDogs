@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 
 public class Salty_Rusty_Controller : MonoBehaviour
 {
-    private AudioSource rustyPunchSound;
+    public AudioSource rustyPunchSound;
+    public AudioSource rustyPunchSound2;
+    public AudioSource saltyJumpSound;
+    public AudioSource rustyJumpSound;
 
     public Transform spawnPos;
     public Transform rustySpawnPos;
@@ -190,7 +193,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
             transform.position = spawnPos.position;
             rustyAgent.Warp(rustySpawnPos.position);
         }
-        rustyPunchSound = GetComponent<AudioSource>();
+
         cam = Camera.main;
         camScript = GetComponent<CameraScript>();
 
@@ -305,6 +308,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void Update()
     {
+        if(PauseMenu.GameIsPaused)
+        {
+            return;
+        }
         if (Input.GetButtonDown("Xbox Start") || Input.GetButtonDown("Xbox Select") || Input.GetButtonDown("Xbox RS") ||
            Input.GetButtonDown("Xbox LS") || Input.GetButtonDown("Xbox B") || Input.GetButtonDown("Xbox LB") ||
            Input.GetButtonDown("Xbox RB") || Input.GetButtonDown("Xbox Interact") || Input.GetButtonDown("Xbox Jump") ||
@@ -606,15 +613,17 @@ public class Salty_Rusty_Controller : MonoBehaviour
         {
             
 
-            if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1"))
+            if (rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash == Animator.StringToHash("punch_1") && rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash != Animator.StringToHash("punch_2"))
             {
-                rustyPunchSound.Play();
+                
                 secondPunchActivated = true;
                 //rustyAnim.SetBool("secondPunchActivated", true);
             }
-            else
+            else if(rustyAnim.GetAnimatorTransitionInfo(0).userNameHash != Animator.StringToHash("punch_1") && rustyAnim.GetAnimatorTransitionInfo(0).userNameHash != Animator.StringToHash("punch_2") && rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash != Animator.StringToHash("punch_1") && rustyAnim.GetCurrentAnimatorStateInfo(0).tagHash != Animator.StringToHash("punch_2"))
             {
-                
+                rustyPunchSound2.Stop();
+                rustyPunchSound.Stop();
+                rustyPunchSound.Play();
                 punchActivated = true;
                 rustyAnim.SetBool("punchActivated", true);
                 rustyRig.velocity = Vector3.zero;
@@ -623,7 +632,9 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         if(secondPunchActivated && punchOneEnded)
         {
-            
+            rustyPunchSound.Stop();
+            rustyPunchSound2.Stop();
+            rustyPunchSound2.Play();
             rustyAnim.SetBool("secondPunchActivated", true);
             //secondPunchActivated = false;
         }
@@ -863,9 +874,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (PauseMenu.GameIsPaused)
+        {
+            return;
+        }
         Vector3 movHorizontal;
         Vector3 movVertical;
         bool isRunning = false;
+        bool rustyIsRunning = false;
 
         saltyAnim.SetBool("jumpActivated", false);
 
@@ -1027,15 +1043,18 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 {
                     UpdateSaltyAfterClimb();
                 }
-                
+                saltyJumpSound.Stop();
+                saltyJumpSound.Play();
                 saltyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 saltyAnim.SetBool("jumpActivated", true);
                 jumpActivated = false;
             }
-            else if(jumpActivated && !isSalty && !rustyIsFalling && !rustyIsClimbing)
+            else if (jumpActivated && !isSalty && !rustyIsFalling && !rustyIsClimbing)
             {
                 rustyRig.AddForce(Vector3.up * 8f, ForceMode.Impulse);
                 jumpActivated = false;
+                rustyJumpSound.Stop();
+                rustyJumpSound.Play();
             }
 
             if (saltyIsFalling && saltyRig.velocity.y < 0f)
@@ -1218,12 +1237,14 @@ public class Salty_Rusty_Controller : MonoBehaviour
                 // rusty movement code
                 if ((movZ != 0 || movX != 0) && !inPunchAnimation && !inPunchAnimationTwo && !inRustyHands && !Physics.Raycast(rusty.transform.position + Vector3.up * 0.4f, rustyModelTans.forward, 0.6f, ~LayerMask.GetMask("Rusty"), QueryTriggerInteraction.Ignore))
                 {
+                    rustyIsRunning = true;
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(velocity.x, rustyRig.velocity.y, velocity.z);
                     rustyRig.velocity = actualVelocity;
                 }
                 else if (movZ == 0 && movX == 0 && !inPunchAnimation && !inPunchAnimationTwo)
                 {
+                    rustyIsRunning = true;
                     Vector3 actualVelocity;
                     actualVelocity = new Vector3(0f, rustyRig.velocity.y, 0f);
                     rustyRig.velocity = actualVelocity;
@@ -1233,6 +1254,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     rustyRig.velocity = Vector3.zero;
                 }
             }
+            rustyAnim.SetBool("isRunning", rustyIsRunning);
             enteredLedgeGrab = false;
         }
         else if (isSalty && isClimbing) // isClimbing

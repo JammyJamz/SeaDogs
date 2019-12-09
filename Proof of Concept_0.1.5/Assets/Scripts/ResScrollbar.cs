@@ -37,7 +37,10 @@ public class ResScrollbar : MonoBehaviour
 
         if(usingXboxController)
         {
-            sb.value = Mathf.Abs(1 - (1f / MainMenu.numOfReses) * (ResItem.index + 0.5f));
+            if(MainMenu.inMainMenu)
+                sb.value = Mathf.Abs(1 - (1f / MainMenu.numOfReses) * (ResItem.index + 0.5f));
+            else
+                sb.value = Mathf.Abs(1 - (1f / PauseMenu.numOfReses) * (ResItem.index + 0.5f));
         }
     }
 }

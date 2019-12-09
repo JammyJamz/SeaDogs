@@ -16,6 +16,7 @@ public class LocalCanvasData : MonoBehaviour
     public LevelLoader levelLoader;
 
     public Animator saltyAnim;
+    public Animator rustyAnim;
 
     // Start is called before the first frame update
     void Start()

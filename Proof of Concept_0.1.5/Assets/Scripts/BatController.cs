@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BatController : MonoBehaviour
 {
+    public AudioSource wings;
     public float patrolSpeed;
     public float maxDiveBombSpeed;
     public float returnToPatrolSpeed;
@@ -68,6 +69,9 @@ public class BatController : MonoBehaviour
 
         if(Salty_Rusty_Controller.isSalty && fov.saltyInView && !onCooldown)
         {
+            if (!wings.isPlaying)
+                wings.Stop();
+
             Vector3 dir = (saltyChestPos - transform.position).normalized;
 
             if(rb.velocity.magnitude <= maxDiveBombSpeed)
@@ -86,6 +90,9 @@ public class BatController : MonoBehaviour
         }
         else if (!Salty_Rusty_Controller.isSalty && fov.rustyInView && !onCooldown)
         {
+            if(!wings.isPlaying)
+                wings.Stop();
+
             Vector3 dir = (rustyChestPos - transform.position).normalized;
 
             if (rb.velocity.magnitude <= maxDiveBombSpeed)
@@ -104,6 +111,8 @@ public class BatController : MonoBehaviour
         }
         else
         {
+            if(wings.isPlaying)
+                wings.Play();
             rb.velocity = vel;
         }
 
