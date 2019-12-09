@@ -1,5 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!135 &1068513233952168634
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243854473770452815}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.0168925
+  m_Center: {x: 0, y: 0.010815821, z: 0}
 --- !u!64 &8924464471819376666
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -7,13 +20,25 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1243854473770452815}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: c2815a7ab32e42c4bb42f59caacb8ec1, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 4864056309639282896, guid: a4132cde14b6a2f43a83526da615843d, type: 3}
+--- !u!114 &809150554528534921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1243854473770452815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b52749d2a4325841b7a4af36b4f4b7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1456676982947519161
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,6 +129,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MediumTreeF
+      objectReference: {fileID: 0}
+    - target: {fileID: -927199367670048503, guid: a4132cde14b6a2f43a83526da615843d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: a4132cde14b6a2f43a83526da615843d,
         type: 3}

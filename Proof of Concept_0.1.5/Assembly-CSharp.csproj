@@ -199,6 +199,7 @@
     <Compile Include="Assets\Scripts\MeleeVFXController.cs" />
     <Compile Include="Assets\Scripts\MovingPlatformScript.cs" />
     <Compile Include="Assets\Scripts\NormalProjectile.cs" />
+    <Compile Include="Assets\Scripts\OnPlatformOrTree.cs" />
     <Compile Include="Assets\Scripts\OptionsMenu.cs" />
     <Compile Include="Assets\Scripts\PauseGameSounds.cs" />
     <Compile Include="Assets\Scripts\PauseMenu.cs" />

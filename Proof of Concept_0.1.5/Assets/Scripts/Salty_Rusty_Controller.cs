@@ -873,6 +873,10 @@ public class Salty_Rusty_Controller : MonoBehaviour
 
         }
 
+        if (rustyAgent.enabled)
+            rustyAnim.SetBool("isRunning", true);
+        
+
         lastRightTrigger = rightTriggerInput;
         lastLeftTrigger = leftTriggerInput;
     }
