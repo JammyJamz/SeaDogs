@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class Salty_Rusty_Controller : MonoBehaviour
 {
+    public Transform rustyAimPosition;
     public AudioSource rustyPunchSound;
     public AudioSource rustyPunchSound2;
     public AudioSource saltyJumpSound;
@@ -310,6 +311,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
     {
         if(PauseMenu.GameIsPaused)
         {
+            isAiming = false;
             return;
         }
         if (Input.GetButtonDown("Xbox Start") || Input.GetButtonDown("Xbox Select") || Input.GetButtonDown("Xbox RS") ||
@@ -435,7 +437,7 @@ public class Salty_Rusty_Controller : MonoBehaviour
         }
         else if(aimKeyUp && isSalty && !saltyIsFalling && isAiming)
         {
-            isAiming = false;
+            isAiming = false;          
             StartLerpingCamAim(camAimPos.localPosition, camStartLocalPos);
             //cam.transform.localPosition = camStartLocalPos;
             //camScript.maxCamOffset = camOffset;
@@ -790,8 +792,11 @@ public class Salty_Rusty_Controller : MonoBehaviour
                     // update destinations of NavMesh Agents
                     if (isSalty)
                     {
-                        if(rustyAgent.enabled)
+                        if(rustyAgent.enabled && !isAiming)
                             rustyAgent.SetDestination(saltyRig.position);
+                        else if (rustyAgent.enabled && isAiming)
+                            rustyAgent.SetDestination(rustyAimPosition.position);
+
                     }
                     else
                     {

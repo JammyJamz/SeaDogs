@@ -246,7 +246,7 @@ public class PauseMenu : MonoBehaviour
                         if (Input.GetAxisRaw("Xbox Vertical") > 0 && lastVertical <= 0 || Input.GetAxisRaw("Xbox Dpad Up Down") > 0 && lastDpadUp <= 0)
                         {
                             mainMenuIndex--;
-                            if (mainMenuIndex == -1)
+                            if (mainMenuIndex <= -1)
                                 mainMenuIndex = 2;
                         }
                         else if (Input.GetAxisRaw("Xbox Vertical") < 0 && lastVertical >= 0 || Input.GetAxisRaw("Xbox Dpad Up Down") < 0 && lastDpadUp >= 0)
@@ -260,7 +260,7 @@ public class PauseMenu : MonoBehaviour
                             playButton.Select();
                         else if (mainMenuIndex == 1)
                             optionsButton.Select();
-                        else
+                        else if (mainMenuIndex == 2)
                             quitButton.Select();
 
                         if (Input.GetButtonDown("Xbox B"))
@@ -477,10 +477,6 @@ public class PauseMenu : MonoBehaviour
             crosshair.SetActive(false);
         }
 
-    }
-
-    public void LateUpdate()
-    {
         PlayerPrefs.SetInt("qualityIndex", qualityDropdown.value);
         QualitySettings.SetQualityLevel(qualityDropdown.value);
 
@@ -497,6 +493,11 @@ public class PauseMenu : MonoBehaviour
 
         PlayerPrefs.SetFloat("controllerSens", contrSlider.value);
         PlayerPrefs.SetFloat("mouseSens", mouseSlider.value);
+    }
+
+    public void LateUpdate()
+    {
+        
     }
 
     public void Resume()

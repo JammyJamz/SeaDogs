@@ -205,7 +205,7 @@ public class MainMenu : MonoBehaviour
                 if (Input.GetAxisRaw("Xbox Vertical") > 0 && lastVertical <= 0 || Input.GetAxisRaw("Xbox Dpad Up Down") > 0 && lastDpadUp <= 0)
                 {
                     mainMenuIndex--;
-                    if (mainMenuIndex == -1)
+                    if (mainMenuIndex <= -1)
                         mainMenuIndex = 2;
                 }
                 else if (Input.GetAxisRaw("Xbox Vertical") < 0 && lastVertical >= 0 || Input.GetAxisRaw("Xbox Dpad Up Down") < 0 && lastDpadUp >= 0)
@@ -219,7 +219,7 @@ public class MainMenu : MonoBehaviour
                     playButton.Select();
                 else if (mainMenuIndex == 1)
                     optionsButton.Select();
-                else
+                else if (mainMenuIndex == 2)
                     quitButton.Select();
             }
             else if (inOptions)

@@ -24474,36 +24474,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 610048825}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &611175391
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 611175392}
-  m_Layer: 0
-  m_Name: rusty aim position
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &611175392
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 611175391}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.885, y: 0, z: -0.556}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1780695908}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &612624203
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37875,11 +37845,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Salty Start Pos
-      objectReference: {fileID: 0}
-    - target: {fileID: 5518228775174582244, guid: e6f17e30f61ad2d49bb01480646b2706,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -6.0200195
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6f17e30f61ad2d49bb01480646b2706, type: 3}
@@ -84778,12 +84743,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 5b45710ae0216db48ad5c725b995c2ba,
     type: 3}
   m_PrefabInstance: {fileID: 1778956812}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1780695908 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2220705506908269656, guid: e6f17e30f61ad2d49bb01480646b2706,
-    type: 3}
-  m_PrefabInstance: {fileID: 822848796}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1781373112
 PrefabInstance:
