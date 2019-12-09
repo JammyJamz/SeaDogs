@@ -8,6 +8,10 @@ public class MeleeDetection : MonoBehaviour
     public int hp = 150;
     public GameObject rootObj;
 
+    public Transform healthSpawnPos;
+
+    public GameObject health;
+
     public GameObject capsule;
     public GameObject model;
     public BatController bc;
@@ -84,6 +88,7 @@ public class MeleeDetection : MonoBehaviour
                 particleEffect.SetActive(true);
                 GameObject.Destroy(transform.parent.gameObject.GetComponent<BoxCollider>());
                 GameObject.Destroy(model);
+                Instantiate(health, healthSpawnPos.position, healthSpawnPos.rotation);
                 GameObject.Destroy(capsule);
 
                 GameObject.Destroy(transform.root.gameObject.GetComponent<Rigidbody>());

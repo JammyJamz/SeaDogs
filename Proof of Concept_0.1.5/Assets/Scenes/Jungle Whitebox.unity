@@ -346,12 +346,12 @@ PrefabInstance:
     - target: {fileID: 5890023163164098567, guid: f3b8d921af659214499aea58c20969a0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.28
+      value: 1.199
       objectReference: {fileID: 0}
     - target: {fileID: 5890023163164098567, guid: f3b8d921af659214499aea58c20969a0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.122
+      value: 1.919
       objectReference: {fileID: 0}
     - target: {fileID: 5890023163164098567, guid: f3b8d921af659214499aea58c20969a0,
         type: 3}
@@ -10507,7 +10507,7 @@ GameObject:
   - component: {fileID: 1947665849}
   - component: {fileID: 1947665848}
   m_Layer: 0
-  m_Name: EventSystem (1)
+  m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

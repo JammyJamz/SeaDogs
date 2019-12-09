@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
-    public float mouseSens = 15f;
+    private float mouseSens;
     public Transform pivotPos;
     public Transform cameraPivot;
     public Transform camPivotPlaceHolder;
@@ -43,12 +43,15 @@ public class CameraScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        mouseSens = PlayerPrefs.GetFloat("mouseSens");
+        float controllerSens = PlayerPrefs.GetFloat("controllerSens");
+
         // get camera input
         mouseX += Input.GetAxis("Mouse X") * Time.deltaTime * mouseSens;
-        mouseX += Input.GetAxis("Controller Y") * Time.deltaTime * mouseSens;
+        mouseX += Input.GetAxis("Controller Y") * Time.deltaTime * controllerSens;
 
         mouseY += Input.GetAxis("Mouse Y") * Time.deltaTime * mouseSens;
-        mouseY += Input.GetAxis("Controller X") * Time.deltaTime * mouseSens;
+        mouseY += Input.GetAxis("Controller X") * Time.deltaTime * controllerSens;
 
         collisionHandler.UpdateCameraClipPoints(cam.transform.position, cam.transform.rotation, ref collisionHandler.adjustedCameraClipPoints);
         collisionHandler.UpdateCameraClipPoints(desiredPosition.transform.position, cam.transform.rotation, ref collisionHandler.desiredCameraClipPoints);
