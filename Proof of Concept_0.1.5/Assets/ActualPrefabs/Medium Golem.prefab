@@ -317,8 +317,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6433f3b85d634ec4c9e8ddfd7837e520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screech: {fileID: 0}
   hp: 150
   rootObj: {fileID: 487455297152846206}
+  healthSpawnPos: {fileID: 0}
+  health: {fileID: 7139274118707938568, guid: bccbfcbee50a2594391866da2ae83672, type: 3}
   capsule: {fileID: 2070013791686977516}
   model: {fileID: 2507616241781219825}
   bc: {fileID: 0}

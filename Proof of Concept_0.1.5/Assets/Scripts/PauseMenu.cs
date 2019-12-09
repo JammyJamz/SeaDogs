@@ -9,6 +9,8 @@ public class PauseMenu : MonoBehaviour
 {
     public static int numOfReses;
 
+    public GameObject hud;
+
     public Image img;
     public GameObject title;
 
@@ -79,6 +81,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Start()
     {
+        hud.SetActive(true);
         MainMenu.inMainMenu = false;
         gameWon = false;
         winMenu.SetActive(false);
@@ -502,6 +505,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
+        hud.SetActive(true);
         //img.color = new Color(img.color.r, img.color.g, img.color.b, 0f);
         Color tempColor = img.color;
         tempColor.a = 0f;
@@ -528,6 +532,7 @@ public class PauseMenu : MonoBehaviour
     }
     void Pause()
     {
+        hud.SetActive(false);
         title.SetActive(true);
         //img.color = new Color(img.color.r, img.color.g, img.color.b, 155f);
         Color tempColor = img.color;

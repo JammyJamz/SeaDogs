@@ -81,6 +81,7 @@ public class MeleeDetection : MonoBehaviour
                 mgc.Hit();
             if (hp == 0)
             {
+                Instantiate(health, transform.position + (Vector3.up * 0.7f), transform.rotation);
                 if (screech != null)
                     screech.Stop();
                 //Debug.Log("setting false...");
@@ -88,7 +89,7 @@ public class MeleeDetection : MonoBehaviour
                 particleEffect.SetActive(true);
                 GameObject.Destroy(transform.parent.gameObject.GetComponent<BoxCollider>());
                 GameObject.Destroy(model);
-                Instantiate(health, healthSpawnPos.position, healthSpawnPos.rotation);
+                
                 GameObject.Destroy(capsule);
 
                 GameObject.Destroy(transform.root.gameObject.GetComponent<Rigidbody>());
@@ -120,11 +121,13 @@ public class MeleeDetection : MonoBehaviour
                 mgc.Hit();
             if (hp == 0)
             {
+                Instantiate(health, healthSpawnPos.position, healthSpawnPos.rotation);
                 //Debug.Log("setting false...");
                 Salty_Rusty_Controller.targetInRange = false;
                 particleEffect.SetActive(true);
                 GameObject.Destroy(transform.parent.gameObject.GetComponent<BoxCollider>());
                 GameObject.Destroy(model);
+                
                 GameObject.Destroy(capsule);
 
                 GameObject.Destroy(transform.root.gameObject.GetComponent<Rigidbody>());
